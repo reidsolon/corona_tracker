@@ -22,3 +22,8 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+![Test Image 7](https://github.com/reidsolon/corona_tracker/blob/master/readme_img/corona1.PNG)
+![Test Image 7](https://github.com/reidsolon/corona_tracker/blob/master/readme_img/corona2.PNG)
+![Test Image 7](https://github.com/reidsolon/corona_tracker/blob/master/readme_img/corona3.PNG)
+![Test Image 7](https://github.com/reidsolon/corona_tracker/blob/master/readme_img/corona4.PNG)
