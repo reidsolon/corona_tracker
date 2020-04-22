@@ -18,5 +18,6 @@ export default {
 
 <style>
 #app {
+  font-family: 'Product Sans Regular';
 }
 </style>
