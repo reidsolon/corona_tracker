@@ -335,7 +335,7 @@ export default {
 .mapboxgl-map {width: 100% !important;}
 #Mapbox__wrapper{z-index: 9; height: 60vh !important; position: relative; padding: 0px; width: 100%;}
 .mapinfo_graph {z-index: 10; position: absolute; margin-top: 1%;margin-left: 1%;}
-.marker-pop-up {border-radius: 50%; height: 3px; width: 3px;}
+.marker-pop-up {border-radius: 50%; height: 15px; width: 15px;}
 .thead-cases{font-weight: unset !important; color: #74797e; font-size: 80%;}
 .card-header{background-color: #fff;}
 
