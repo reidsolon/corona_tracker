@@ -307,7 +307,7 @@ export default {
         },
 
         getLATEST_SITUATION() {
-            var url = `http://covid19-news.herokuapp.com/api/covid19/latest-situations`
+            var url = `https://covid19-news.herokuapp.com/api/covid19/latest-situations`
             axios.get(url)
             .then( res => {
                 this.data.news.latestSituations = res.data
