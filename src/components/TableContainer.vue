@@ -169,7 +169,8 @@
                             <div class="col-md-12 mt10">
                                 <div class="card" style="height: 55vh;">
                                     <div class="card-body">
-                                        <h5>New cases over time</h5>
+                                        <!-- <h5>New cases over time</h5> -->
+                                        <h5>Overall cases over time</h5>
                                         <!-- <h6 v-if="data.selectedCountry == `worldwide`">Worldwide</h6>
                                         <h6 v-else>{{data.selectedCountry.name}}</h6> -->
                                         <div class="chart-container" style="position: relative; height:40vh; width:100%;">
@@ -418,7 +419,7 @@ export default {
                         data: confirmed,
                         borderWidth: 1,
                         backgroundColor: [
-                            'rgba(0, 0, 0, 0.1)',
+                            'rgba(0, 0, 255, 0.1)',
                         ],
                         borderColor: [
                             'rgba(0, 0, 255, 1)',
@@ -429,10 +430,10 @@ export default {
                         data: deaths,
                         borderWidth: 1,
                         backgroundColor: [
-                            'rgba(0, 0, 0, 0.1)',
+                            'rgba(255, 0, 0, 0.1)',
                         ],
                         borderColor: [
-                            'rgba(255, 99, 132, 1)',
+                            'rgba(255, 0, 0, 1)',
                         ],
                     },
                 ]
@@ -492,6 +493,8 @@ export default {
             .then( res => {
                 var array = res.data
                 var returnArray = []
+                var recovered   = []
+                var died        = []
                 var month
                 var Months = [0,1,2,3]
                 var labels = ['January', 'Febuary', 'March', 'April']
@@ -500,6 +503,8 @@ export default {
                         month = new Date(el.Date).getMonth()
                         if(month == month_el ) {
                             returnArray[month_el] = parseInt(el.Confirmed)
+                            recovered[month_el]   = parseInt(el.Recovered)
+                            died[month_el]        = parseInt(el.Deaths)
                         } 
                     })
                 })
@@ -510,10 +515,34 @@ export default {
                         data: returnArray,
                         borderWidth: 1,
                         backgroundColor: [
-                            'rgba(0, 0, 0, 0.1)',
+                            'rgba(0, 0, 255, 0.1)',
                         ],
                         borderColor: [
                             'rgba(0, 0, 255, 1)',
+                        ],
+                    },
+
+                    {
+                        label: 'Recovered',
+                        data: recovered,
+                        borderWidth: 1,
+                        backgroundColor: [
+                            'rgba(0, 255, 0, 0.1)',
+                        ],
+                        borderColor: [
+                            'rgba(0, 255, 0, 1)',
+                        ],
+                    },
+
+                    {
+                        label: 'Deaths',
+                        data: died,
+                        borderWidth: 1,
+                        backgroundColor: [
+                            'rgba(255, 0, 0, 0.1)',
+                        ],
+                        borderColor: [
+                            'rgba(255, 0, 0, 1)',
                         ],
                     },
                 ]
