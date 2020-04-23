@@ -6,11 +6,11 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="card">
-                            <div class="card-header">
+                            <div class="card-header ">
                                 <strong><h4>Coronavirus (COVID-19)</h4></strong>
                                 Updated {{ data.mapInfo.summary.lastUpdate | moment("from", "now") }}
                             </div>
-                            <div class="card-body">
+                            <div class="card-body ">
                                 <span class="thead-cases">Map data is currently unavailable due to some network data issues.<br> It will be back as soon it is fixed.</span>
                                 <div class="form-group">
                                     <select class="form-control" v-model="data.selectedByType">
@@ -30,14 +30,17 @@
                                     <div class="col-md-4">
                                         <span class="thead-cases">Confirmed</span> <br>
                                         <strong class="l-space" >{{thousand_number(data.mapInfo.summary.confirmed.value)}}</strong>
+                                        <strong class="l-space" >{{thousand_number(data.mapInfo.summary.confirmed.value)}}</strong>
                                     </div>
                                     <div class="col-md-4">
                                         <span class="thead-cases">Recovered</span> <br>
                                         <strong class="l-space" >{{thousand_number(data.mapInfo.summary.recovered.value)}}</strong>
+                                        <strong class="l-space" >{{thousand_number(data.mapInfo.summary.confirmed.value)}}</strong>
                                     </div>
                                     <div class="col-md-4">
                                         <span class="thead-cases">Deaths</span> <br>
                                         <strong class="l-space">{{thousand_number(data.mapInfo.summary.deaths.value)}}</strong>
+                                        <strong class="l-space" >{{thousand_number(data.mapInfo.summary.confirmed.value)}}</strong>
                                     </div>
                                 </div>
                                 <div class="row justify-content-center" v-else>
@@ -114,13 +117,13 @@
                 </template> -->
             </MglMap>
         </div>
-        <div class="col-md-12">
+        <div class="col-md-12 ">
             <div class="row justify-content-center">
                 <a class="btn btn-primary" href="#summary__area" id="moreStat__btn">• More stats and news</a>
             </div>
         </div>
-        <div class="col-md-12 mt5" id="summary__area">
-            <div class="container">
+        <div class="col-md-12 " id="summary__area">
+            <div class="container mt5">
                 <div class="row"> 
                     <div class="col-md-8">
                         <div class="row">
@@ -189,7 +192,13 @@
                                     <div class="card-body">
                                         <h5>Cases over time</h5>
                                         <h6 v-if="data.selectedCountry == `worldwide`">Worldwide</h6>
-                                        <h6 v-else>{{data.selectedCountry.name}}</h6>
+                                        <h6 v-else>{{data.selectedCountry.name}} 
+                                            (
+                                                Out of {{data.mapInfo.singleRow.confirmed.value}} confirmed cases {{((data.mapInfo.singleRow.deaths.value / data.mapInfo.singleRow.confirmed.value) * 100).toFixed(2)}}% of it died. 
+                                                However, {{ ((data.mapInfo.singleRow.recovered.value / data.mapInfo.singleRow.confirmed.value) * 100).toFixed(2)}}% of it has recovered
+                                            )
+                                        
+                                        </h6>
                                         <div class="chart-container" style="position: relative; height:40vh; width:100%;">
                                             <canvas id="cases_chart"></canvas>
                                         </div>
@@ -205,7 +214,7 @@
                                         <h5>Enjoy using this project?</h5>
                                         <p>This project is inspired by google covid 19 tracker user interface. You can it see <a href="https://news.google.com/covid19/map?hl=en-PH&gl=PH&ceid=PH:en" target="_blank">here</a></p>
                                         <br>
-                                        <h5>Why don't you buy me a coffee!</h5>
+                                        <h5>Why don't you buy me a <a href="https://www.buymeacoffee.com/reidsolon" target="_blank">coffee!</a></h5>
                                         <hr>
                                         <span class="thead-cases">Consumed APIs: <a href="https://covid19.mathdro.id/api" target="_blank">MathroidAPI</a>, <a href="https://api.covid19api.com/" target="_blank">ApiCOVID19</a> </span><br>
                                         <span class="thead-cases">JS Framework used: <a href="https://vuejs.org" target="_blank">Vue</a></span><br>
@@ -623,6 +632,9 @@ export default {
 .no-p-top{padding-top: unset;}
 .mt10 {margin-top: 5%;}
 .mt5 {margin-top: 2%;}
+
+.dark-mode{background-color: #111;color: #fff;}
+.dark-mode-2{background-color: #2e3235; color: #fff;}
 
 .l-space {letter-spacing: 0.05em;}
 </style>
