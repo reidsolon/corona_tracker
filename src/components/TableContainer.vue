@@ -184,15 +184,15 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-12 mt10">
+                            <div class="col-md-12 mt10" v-if="data.selectedCountry != 'worldwide'">
                                 <div class="card" style="height: 51vh;">
                                     <div class="card-body">
                                         <h5>Cases over time</h5>
                                         <h6 v-if="data.selectedCountry == `worldwide`">Worldwide</h6>
                                         <h6 v-else>{{data.selectedCountry.name}} 
                                             (
-                                                Out of {{data.mapInfo.singleRow.confirmed.value}} confirmed cases {{((data.mapInfo.singleRow.deaths.value / data.mapInfo.singleRow.confirmed.value) * 100).toFixed(2)}}% of it died. 
-                                                However, {{ ((data.mapInfo.singleRow.recovered.value / data.mapInfo.singleRow.confirmed.value) * 100).toFixed(2)}}% of it has recovered
+                                                Out of  <span class="dodgerblue"><strong>{{data.mapInfo.singleRow.confirmed.value}}</strong></span> confirmed cases <span class="crimson"><strong>{{((data.mapInfo.singleRow.deaths.value / data.mapInfo.singleRow.confirmed.value) * 100).toFixed(2)}}%</strong></span> of it died. 
+                                                However, <span class="limegreen"><strong>{{ ((data.mapInfo.singleRow.recovered.value / data.mapInfo.singleRow.confirmed.value) * 100).toFixed(2)}}%</strong></span> of it has recovered
                                             )
                                         
                                         </h6>
