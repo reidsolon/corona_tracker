@@ -30,17 +30,14 @@
                                     <div class="col-md-4">
                                         <span class="thead-cases">Confirmed</span> <br>
                                         <strong class="l-space" >{{thousand_number(data.mapInfo.summary.confirmed.value)}}</strong>
-                                        <strong class="l-space" >{{thousand_number(data.mapInfo.summary.confirmed.value)}}</strong>
                                     </div>
                                     <div class="col-md-4">
                                         <span class="thead-cases">Recovered</span> <br>
                                         <strong class="l-space" >{{thousand_number(data.mapInfo.summary.recovered.value)}}</strong>
-                                        <strong class="l-space" >{{thousand_number(data.mapInfo.summary.confirmed.value)}}</strong>
                                     </div>
                                     <div class="col-md-4">
                                         <span class="thead-cases">Deaths</span> <br>
                                         <strong class="l-space">{{thousand_number(data.mapInfo.summary.deaths.value)}}</strong>
-                                        <strong class="l-space" >{{thousand_number(data.mapInfo.summary.confirmed.value)}}</strong>
                                     </div>
                                 </div>
                                 <div class="row justify-content-center" v-else>
