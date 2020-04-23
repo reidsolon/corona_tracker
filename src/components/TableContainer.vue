@@ -167,7 +167,7 @@
                             </div>
 
                             <div class="col-md-12 mt10">
-                                <div class="card" style="height: 45vh;">
+                                <div class="card" style="height: 51vh;">
                                     <div class="card-body">
                                         <h5>New cases over time</h5>
                                         <h6 v-if="data.selectedCountry == `worldwide`">Worldwide</h6>
@@ -175,12 +175,14 @@
                                         <div class="chart-container" style="position: relative; height:40vh; width:100%;">
                                             <canvas id="new_cases_chart"></canvas>
                                         </div>
+                                        <span v-if="data.selectedCountry == 'worldwide'" class="thead-cases">Updated {{ data.mapInfo.summary.lastUpdate | moment("from", "now") }}. Source: <a href="'https://api.covid19api.com/summary" target="_blank">Covid19 API</a></span>
+                                        <span v-else class="thead-cases">Updated {{ data.mapInfo.summary.lastUpdate | moment("from", "now") }}. Source: <a :href="'https://api.covid19api.com/country/'+data.selectedCountry.name" target="_blank">Covid19 API</a></span>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-md-12 mt10">
-                                <div class="card" style="height: 45vh;">
+                                <div class="card" style="height: 51vh;">
                                     <div class="card-body">
                                         <h5>Cases over time</h5>
                                         <h6 v-if="data.selectedCountry == `worldwide`">Worldwide</h6>
@@ -188,6 +190,8 @@
                                         <div class="chart-container" style="position: relative; height:40vh; width:100%;">
                                             <canvas id="cases_chart"></canvas>
                                         </div>
+                                        <span v-if="data.selectedCountry == 'worldwide'" class="thead-cases">Updated {{ data.mapInfo.summary.lastUpdate | moment("from", "now") }}. Source: <a href="'https://api.covid19api.com/summary" target="_blank">Covid19 API</a></span>
+                                        <span v-else class="thead-cases">Updated {{ data.mapInfo.summary.lastUpdate | moment("from", "now") }}. Source: <a :href="'https://api.covid19api.com/country/'+data.selectedCountry.name" target="_blank">Covid19 API</a></span>
                                     </div>
                                 </div>
                             </div>
@@ -422,14 +426,26 @@ export default {
                 axios.get(url)
                 .then( res => {
                     this.data.mapInfo.singleRow = res.data
+                    this.populateChart(country.name)
                 })
                 .catch( err => {
                     console.log(err)
                 })
             }
-            setChart('cases_chart', 'line')
-            setChart('new_cases_chart', 'bar')
+            
         },
+
+        populateChart(country) {
+            var url = `https://api.covid19api.com/country/${country}`
+            axios.get(url)
+            .then( res => {
+                setChart('cases_chart', 'line', res.data)
+                setChart('new_cases_chart', 'line', res.data)
+            })
+            .catch( err => {
+                console.log(err)
+            })
+        }
 
     },
     mounted() {

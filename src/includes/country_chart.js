@@ -1,16 +1,35 @@
 
 
 var Chart = require('chart.js')
-export const setChart = (id, type) => {
+
+const process = array => {
+    var returnArray = []
+    var month
+    var Months = [0,1,2,3]
+
+    Months.map( month_el => {
+        array.map( (el) => {
+            month = new Date(el.Date).getMonth()
+            if(month == month_el ) {
+                returnArray[month_el] = parseInt(el.Confirmed)
+            } 
+         })
+    })
+    
+
+     return returnArray
+}
+export const setChart = (id, type, array) => {
+    var datasets = []
+    datasets = process(array)
     var ctx = document.getElementById(id);
-    console.log(ctx)
     var myChart = new Chart(ctx, {
         type: type,
         data: {
-            labels: ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October','November','December'],
+            labels: ['January', 'Febuary', 'March', 'April'],
             datasets: [{
                 label: 'Cases',
-                data: [12, 19, 3, 5, 2, 3],
+                data: datasets,
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
                 ],
@@ -27,5 +46,5 @@ export const setChart = (id, type) => {
             }
         }
     });
-    console.log(myChart)
+    myChart
 }
