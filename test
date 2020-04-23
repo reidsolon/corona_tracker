@@ -2,7 +2,7 @@
     <div class="row">
         <Navigation></Navigation>
         <div class="col-md-12" id="Mapbox__wrapper">
-            <div class="mapinfo_graph mt10">
+            <div class="mapinfo_graph bottom mt10">
                 <div class="row">
                     <div class="col-md-12">
                         <div class="card">
@@ -11,7 +11,6 @@
                                 Updated {{ data.mapInfo.summary.lastUpdate | moment("from", "now") }}
                             </div>
                             <div class="card-body">
-                                <span class="thead-cases">Map data is currently unavailable due to some network data issues.<br> It will be back as soon it is fixed.</span>
                                 <div class="form-group">
                                     <select class="form-control" v-model="data.selectedByType">
                                         <option value="confirmed" selected>Confirmed</option>
@@ -22,7 +21,7 @@
                                 <div class="form-group">
                                     <select class="form-control" v-model="data.selectedCountry" @change="getSUMMARY_TABLE(data.selectedCountry)">
                                         <option value="worldwide" selected>Worldwide</option>
-                                        <option :value="country" v-for="(country, index) in data.countries.row" :key="index">{{country.name}}</option>
+                                        <option :value="country.iso3" v-for="(country, index) in data.countries.row" :key="index">{{country.name}}</option>
                                     </select>
                                 </div>
 
@@ -43,23 +42,18 @@
                                 <div class="row justify-content-center" v-else>
                                     <div class="col-md-4">
                                         <span class="thead-cases">Confirmed</span> <br>
-                                        <strong class="l-space" :title="'Last updated '+data.mapInfo.singleRow.lastUpdate | moment('from', 'now')">{{thousand_number(data.mapInfo.singleRow.confirmed.value)}}</strong>
+                                        <strong class="l-space" :title="data.mapInfo.singleRow.lastUpdate | moment('from', 'now')">{{thousand_number(data.mapInfo.singleRow.confirmed.value)}}</strong>
                                     </div>
                                     <div class="col-md-4">
                                         <span class="thead-cases">Recovered</span> <br>
-                                        <strong class="l-space" :title="'Last updated '+data.mapInfo.singleRow.lastUpdate | moment('from', 'now')">{{thousand_number(data.mapInfo.singleRow.deaths.value)}}</strong>
+                                        <strong class="l-space" :title="data.mapInfo.singleRow.lastUpdate | moment('from', 'now')">{{thousand_number(data.mapInfo.singleRow.deaths.value)}}</strong>
                                     </div>
                                     <div class="col-md-4">
                                         <span class="thead-cases">Deaths</span> <br>
-                                        <strong class="l-space" :title="'Last updated '+data.mapInfo.singleRow.lastUpdate | moment('from', 'now')">{{thousand_number(data.mapInfo.singleRow.deaths.value)}}</strong>
+                                        <strong class="l-space" :title="data.mapInfo.singleRow.lastUpdate | moment('from', 'now')">{{thousand_number(data.mapInfo.singleRow.deaths.value)}}</strong>
                                     </div>
                                 </div>
 
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <span class="thead-cases">Source: <a :href="data.mapInfo.summary.source" target="_blank"><u>MathroidAPI</u></a></span>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -114,14 +108,9 @@
                 </template>
             </MglMap>
         </div>
-        <div class="col-md-12">
-            <div class="row justify-content-center">
-                <a class="btn btn-primary" href="#summary__area" id="moreStat__btn">• More stats and news</a>
-            </div>
-        </div>
-        <div class="col-md-12 mt5" id="summary__area">
+        <div class="col-md-12 mt10">
             <div class="container">
-                <div class="row"> 
+                <div class="row">
                     <div class="col-md-8">
                         <div class="row">
                             <div class="col-md-12">
@@ -129,9 +118,6 @@
                                     <div class="card-body">
                                         <h5>Cases</h5>
                                         <table class="table" >
-                                            
-                                        </table>
-                                        <table class="table" id="summary__table" >
                                             <thead>
                                                 <tr>
                                                     <th scope="col" class="no-bt thead-cases no-bb">Location</th>
@@ -140,6 +126,8 @@
                                                     <th scope="col" class="no-bt thead-cases no-bb">Deaths</th>
                                                 </tr>
                                             </thead>
+                                        </table>
+                                        <table class="table" style="overflow-y: scroll; height: 40vh !important; display: block;" >
                                             <tbody v-if="data.mapInfo.tableRow != []">
                                                 <tr>
                                                     <th scope="col">Worldwide</th>
@@ -154,60 +142,9 @@
                                                     <td><span v-if="country.NewDeaths > 0"> <strong>(+{{thousand_number(country.NewDeaths)}})</strong></span> {{thousand_number(country.TotalDeaths) }}</td>
                                                 </tr>
                                             </tbody>
-                                            <tbody v-else>
-                                                <div class="text-center">
-                                                    <div class="spinner-border" role="status">
-                                                        <span class="sr-only">Loading...</span>
-                                                    </div>
-                                                </div>
-                                            </tbody>
                                         </table>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="col-md-12 mt10">
-                                <div class="card" style="height: 45vh;">
-                                    <div class="card-body">
-                                        <h5>New cases over time</h5>
-                                        <h6 v-if="data.selectedCountry == `worldwide`">Worldwide</h6>
-                                        <h6 v-else>{{data.selectedCountry.name}}</h6>
-                                        <div class="chart-container" style="position: relative; height:40vh; width:100%;">
-                                            <canvas id="new_cases_chart"></canvas>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-12 mt10">
-                                <div class="card" style="height: 45vh;">
-                                    <div class="card-body">
-                                        <h5>Cases over time</h5>
-                                        <h6 v-if="data.selectedCountry == `worldwide`">Worldwide</h6>
-                                        <h6 v-else>{{data.selectedCountry.name}}</h6>
-                                        <div class="chart-container" style="position: relative; height:40vh; width:100%;">
-                                            <canvas id="cases_chart"></canvas>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-12 mt10">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h5>Enjoy using this project?</h5>
-                                        <p>This project is inspired by google covid 19 tracker user interface. You can it see <a href="https://news.google.com/covid19/map?hl=en-PH&gl=PH&ceid=PH:en" target="_blank">here</a></p>
-                                        <br>
-                                        <h5>Why don't you buy me a coffee!</h5>
-                                        <hr>
-                                        <span class="thead-cases">Consumed APIs: <a href="https://covid19.mathdro.id/api" target="_blank">MathroidAPI</a>, <a href="https://api.covid19api.com/" target="_blank">ApiCOVID19</a> </span><br>
-                                        <span class="thead-cases">JS Framework used: <a href="https://vuejs.org" target="_blank">Vue</a></span><br>
-                                        <span class="thead-cases">MapboxGL Framework used: <a href="https://soal.github.io/vue-mapbox/api/marker.html#props" target="_blank">VueMapbox</a></span><br>
-                                        <span class="thead-cases">Chart Plugin used: <a href="https://chartjs.org" target="_blank">ChartJS</a></span><br>
-                                        <span class="thead-cases">Developed by: <a href="https://github.com/reidsolon" target="_blank">reidsolon</a></span>
-                                    </div>
-                                </div>
-                                <div class="mt10"></div>
                             </div>
                         </div>
                     </div>
@@ -215,16 +152,6 @@
                     <div class="col-md-4">
                         <div class="row">
                             <div class="col-md-12">
-                                <div class="card" style="height: 55vh;">
-                                    <div class="card-body">
-                                        <h5>Top News 
-                                            <span v-if="data.selectedCountry != 'worldwide'">for {{data.selectedCountry.name}}</span>
-                                        </h5>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-12 mt10">
                                 <div class="card">
                                     <div class="card-body">
                                         <h5>Latest Situations</h5>
@@ -240,15 +167,15 @@
                                             Source: <a :href="data.news.latestSituations.source" target="_blank" >{{data.news.latestSituations.source}} </a>
                                         </div>
                                     </template>
-                                    <template v-else>
-                                        <div class="text-center">
-                                            <div class="spinner-border" role="status">
-                                                <span class="sr-only">Loading...</span>
-                                            </div>
-                                        </div>
-                                        <div class="mt10"></div>
-                                    </template>
                                     
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 mt10">
+                                <div class="card" style="height: 55vh;">
+                                    <div class="card-body">
+                                        <h5>Top News</h5>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -261,7 +188,6 @@
 <script>
 import Navigation from './Navigation'
 import Mapbox from "mapbox-gl";
-import {setChart} from "../includes/country_chart"
 import { 
     MglMap,
     MglPopup, 
@@ -383,6 +309,32 @@ export default {
             })
         },
 
+        getSUMMARY_TABLE(country = this.data.selectedCountry) {
+            var url = ''
+            if(country == 'worldwide') {
+                url = 'https://api.covid19api.com/summary'
+
+                axios.get(url)
+                .then( res => {
+                    this.data.mapInfo.tableRow = res.data.Countries
+                })
+                .catch( err => {
+                    console.log(err)
+                })
+            } else {
+                url = `https://covid19.mathdro.id/api/countries/${country}`
+
+                axios.get(url)
+                .then( res => {
+                    this.data.mapInfo.singleRow = res.data
+                })
+                .catch( err => {
+                    console.log(err)
+                })
+            }
+            
+        },
+
         getSUMMARY() {
             axios.get(`https://covid19.mathdro.id/api/`)
             .then( res => {
@@ -402,43 +354,14 @@ export default {
             .catch( err => {
                 console.log(err)
             })
-        },
-
-        getSUMMARY_TABLE(country = this.data.selectedCountry) {
-            var url = ''
-            if(country == 'worldwide') {
-                url = 'https://api.covid19api.com/summary'
-
-                axios.get(url)
-                .then( res => {
-                    this.data.mapInfo.tableRow = res.data.Countries
-                })
-                .catch( err => {
-                    console.log(err)
-                })
-            } else {
-                url = `https://covid19.mathdro.id/api/countries/${country.iso3}`
-
-                axios.get(url)
-                .then( res => {
-                    this.data.mapInfo.singleRow = res.data
-                })
-                .catch( err => {
-                    console.log(err)
-                })
-            }
-            setChart('cases_chart', 'line')
-            setChart('new_cases_chart', 'bar')
-        },
-
+        }
     },
     mounted() {
         this.getAPI()
         this.getCOUNTRIES()
         this.getSUMMARY()
-        this.getLATEST_SITUATION()
         this.getSUMMARY_TABLE()
-
+        this.getLATEST_SITUATION()
         // this.getALL()
     },
 
@@ -448,21 +371,6 @@ export default {
 }
 </script>
 <style scoped>
-.card {border-radius: 10px;}
-#moreStat__btn {
-    height: 100%; 
-    font-family: Arial;
-    border-color: #fff;
-    padding: 15px; 
-    margin-top: -1.5%; 
-    z-index: 13; 
-    border-radius: 25em;
-    background-color: #fff;
-    color: #111;
-    font-size: 90%;
-    box-shadow: 0 3px 8px 0 rgba(0,0,0,.25);
-}
-#summary__table {overflow-y: scroll; height: 40vh !important; display: block;}
 .mapboxgl-map {width: 100% !important;}
 #Mapbox__wrapper{z-index: 9; height: 60vh !important; position: relative; padding: 0px; width: 100%;}
 .mapinfo_graph {z-index: 10; position: absolute; margin-top: 1%;margin-left: 1%;}
@@ -481,7 +389,6 @@ export default {
 .no-bt{border-top: unset;}
 .no-p-top{padding-top: unset;}
 .mt10 {margin-top: 5%;}
-.mt5 {margin-top: 2%;}
 
 .l-space {letter-spacing: 0.05em;}
 </style>
