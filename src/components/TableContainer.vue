@@ -581,7 +581,7 @@ export default {
         this.getLATEST_SITUATION()
         this.getSUMMARY_TABLE()
 
-        this.getALL()
+        // this.getALL()
     },
 
     created() {
