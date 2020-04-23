@@ -12,6 +12,7 @@
     "bootstrap": "^4.4.1",
     "chart.js": "^2.9.3",
     "core-js": "^3.6.4",
+    "countup.js": "^2.0.4",
     "mapbox-gl": "^1.9.1",
     "vue": "^2.6.11",
     "vue-mapbox": "^0.4.1",

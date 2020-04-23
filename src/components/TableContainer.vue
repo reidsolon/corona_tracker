@@ -80,7 +80,7 @@
                 <MglScaleControl />
 
                 <!-- markers -->
-                <template v-if="true">
+                <!-- <template v-if="true">
                     <MglMarker v-for="(marker, index) in data.map.row" :coordinates="[marker.long, marker.lat]" :key="index" style="z-index: 11 important;" @click="setMapCenter(marker)">
                         <div 
                             slot="marker" 
@@ -111,7 +111,7 @@
                                 </div>
                         </MglPopup>
                     </MglMarker>
-                </template>
+                </template> -->
             </MglMap>
         </div>
         <div class="col-md-12">
@@ -167,16 +167,18 @@
                             </div>
 
                             <div class="col-md-12 mt10">
-                                <div class="card" style="height: 51vh;">
+                                <div class="card" style="height: 55vh;">
                                     <div class="card-body">
                                         <h5>New cases over time</h5>
-                                        <h6 v-if="data.selectedCountry == `worldwide`">Worldwide</h6>
-                                        <h6 v-else>{{data.selectedCountry.name}}</h6>
+                                        <!-- <h6 v-if="data.selectedCountry == `worldwide`">Worldwide</h6>
+                                        <h6 v-else>{{data.selectedCountry.name}}</h6> -->
                                         <div class="chart-container" style="position: relative; height:40vh; width:100%;">
                                             <canvas id="new_cases_chart"></canvas>
                                         </div>
+                                        <span  class="thead-cases">New cases are the confirmed cases reported since the previous day</span><br>
                                         <span v-if="data.selectedCountry == 'worldwide'" class="thead-cases">Updated {{ data.mapInfo.summary.lastUpdate | moment("from", "now") }}. Source: <a href="'https://api.covid19api.com/summary" target="_blank">Covid19 API</a></span>
                                         <span v-else class="thead-cases">Updated {{ data.mapInfo.summary.lastUpdate | moment("from", "now") }}. Source: <a :href="'https://api.covid19api.com/country/'+data.selectedCountry.name" target="_blank">Covid19 API</a></span>
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -268,8 +270,8 @@ import Mapbox from "mapbox-gl";
 import {setChart} from "../includes/country_chart"
 import { 
     MglMap,
-    MglPopup, 
-    MglMarker, 
+    // MglPopup, 
+    // MglMarker, 
     MglAttributionControl,
     MglNavigationControl,
     MglGeolocateControl,
@@ -280,8 +282,8 @@ const axios = require('axios')
 export default {
     components: {
         MglMap,
-        MglMarker,
-        MglPopup,
+        // MglMarker,
+        // MglPopup,
         MglAttributionControl,
         MglNavigationControl,
         MglGeolocateControl,
@@ -395,6 +397,55 @@ export default {
             .catch( err => {
                 console.log(err)
             })
+
+            var url = 'https://covid19.mathdro.id/api/daily'
+            axios.get(url)
+            .then( res => {
+                var array = res.data
+                var confirmed = []
+                var deaths    = []
+                var labels    = []
+
+                array.map( (el) => {
+                    labels.push( el.reportDate )
+                    confirmed.push( el.totalConfirmed )
+                    deaths.push( el.deaths.total)
+                })
+
+                var datasets = [
+                    {
+                        label: 'Confirmed',
+                        data: confirmed,
+                        borderWidth: 1,
+                        backgroundColor: [
+                            'rgba(0, 0, 0, 0.1)',
+                        ],
+                        borderColor: [
+                            'rgba(0, 0, 255, 1)',
+                        ],
+                    },
+                    {
+                        label: 'Died',
+                        data: deaths,
+                        borderWidth: 1,
+                        backgroundColor: [
+                            'rgba(0, 0, 0, 0.1)',
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                        ],
+                    },
+                ]
+
+                var processed = {
+                    datasets,
+                    labels
+                }
+                setChart('new_cases_chart', 'line', processed)
+            })
+            .catch( err => {
+                console.log(err)
+            })
         },
 
         getLATEST_SITUATION() {
@@ -439,13 +490,45 @@ export default {
             var url = `https://api.covid19api.com/country/${country}`
             axios.get(url)
             .then( res => {
-                setChart('cases_chart', 'line', res.data)
-                setChart('new_cases_chart', 'line', res.data)
+                var array = res.data
+                var returnArray = []
+                var month
+                var Months = [0,1,2,3]
+                var labels = ['January', 'Febuary', 'March', 'April']
+                Months.map( month_el => {
+                    array.map( (el) => {
+                        month = new Date(el.Date).getMonth()
+                        if(month == month_el ) {
+                            returnArray[month_el] = parseInt(el.Confirmed)
+                        } 
+                    })
+                })
+
+                var datasets = [
+                    {
+                        label: 'Confirmed',
+                        data: returnArray,
+                        borderWidth: 1,
+                        backgroundColor: [
+                            'rgba(0, 0, 0, 0.1)',
+                        ],
+                        borderColor: [
+                            'rgba(0, 0, 255, 1)',
+                        ],
+                    },
+                ]
+                
+
+                var processed = {
+                    datasets,
+                    labels
+                }
+                setChart('cases_chart', 'line', processed)
             })
             .catch( err => {
                 console.log(err)
             })
-        }
+        },
 
     },
     mounted() {
