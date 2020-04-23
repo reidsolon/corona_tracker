@@ -80,38 +80,38 @@
                 <MglScaleControl />
 
                 <!-- markers -->
-                <!-- <template v-if="true">
-                    <MglMarker v-for="(marker, index) in data.map.row" :coordinates="[marker.long, marker.lat]" :key="index" style="z-index: 11 important;" @click="setMapCenter(marker)">
+                <template v-if="true">
+                    <MglMarker v-for="(marker, index) in data.map.row" :coordinates="[marker.long, marker.lat]" :key="index" style="z-index: 11 important;">
                         <div 
                             slot="marker" 
                             class="marker-pop-up" 
                             :class="{'death__color' : data.selectedByType == 'death' && marker.deaths > 0, 'confirmed__color' : data.selectedByType == 'confirmed' && marker.confirmed > 0}"
                         >
                         </div>
-                        <MglPopup v-if="marker.long != null && marker.lat != null" :coordinates="[marker.long, marker.lat]" anchor="top" @close="defaultCountry">
+                        <MglPopup v-if="marker.long != null && marker.lat != null" :coordinates="[marker.long, marker.lat]" anchor="top">
                                 <div class="row">
-                                    <div class="col-md-12">
+                                    <div class="col-md-12" style="text-align:center;">
                                         <strong> {{marker.combinedKey}} </strong>
                                     </div>
                                     <div class="col-md-12 mt10">
-                                        Total Confirmed: <strong>{{marker.confirmed}}</strong>
+                                        Confirmed: <strong class="dodgerblue">{{marker.confirmed}}</strong>
                                     </div>
                                     <div class="col-md-12">
-                                        Total Deaths: <strong>{{marker.deaths}}</strong>
+                                        Deaths: <strong class="crimson">{{marker.deaths}}</strong>
                                     </div>
                                     <div class="col-md-12">
-                                        Total Recovered: {{marker.recovered}}
+                                        Recovered: <strong class="limegreen">{{marker.recovered}}</strong>
                                     </div>
                                     <div class="col-md-12">
                                         Active Cases: {{marker.active}}
                                     </div>
                                     <div class="col-md-12">
-                                        Last updated: {{ marker.lastUpdate | moment("from", "now") }}
+                                        Updated {{ marker.lastUpdate | moment("from", "now") }}
                                     </div>
                                 </div>
                         </MglPopup>
                     </MglMarker>
-                </template> -->
+                </template>
             </MglMap>
         </div>
         <div class="col-md-12 ">
@@ -147,7 +147,7 @@
                                                     <th scope="col">{{thousand_number(data.mapInfo.summary.recovered.value)}}</th>
                                                     <th scope="col">{{thousand_number(data.mapInfo.summary.deaths.value)}}</th>
                                                 <tr>
-                                                <tr v-for="(country, index) in data.mapInfo.tableRow" :key="index">
+                                                <tr v-for="(country, index) in data.mapInfo.tableRow" :key="index" style="color: #727375; font-size: 90%;">
                                                     <td>{{country.Country}}</td>
                                                     <td><span v-if="country.NewConfirmed > 0"> <strong>(+{{thousand_number(country.NewConfirmed)}})</strong></span> {{thousand_number(country.TotalConfirmed) }}</td>
                                                     <td><span v-if="country.NewRecovered > 0"> <strong>(+{{thousand_number(country.NewRecovered)}})</strong></span> {{thousand_number(country.TotalRecovered) }}</td>
@@ -277,8 +277,8 @@ import Mapbox from "mapbox-gl";
 import {setChart} from "../includes/country_chart"
 import { 
     MglMap,
-    // MglPopup, 
-    // MglMarker, 
+    MglPopup, 
+    MglMarker, 
     MglAttributionControl,
     MglNavigationControl,
     MglGeolocateControl,
@@ -289,8 +289,8 @@ const axios = require('axios')
 export default {
     components: {
         MglMap,
-        // MglMarker,
-        // MglPopup,
+        MglMarker,
+        MglPopup,
         MglAttributionControl,
         MglNavigationControl,
         MglGeolocateControl,
@@ -334,11 +334,6 @@ export default {
             this.data.selectedCountry = 'worldwide'
             this.data.map.center = [0,0]
             this.data.map.zoom = parseInt(1)
-        },
-        setMapCenter( markerOptions ) {
-            this.data.map.center = [markerOptions.long , markerOptions.lat]
-            this.data.map.zoom = parseInt(5)
-            this.data.selectedCountry = markerOptions.iso3
         },
         thousand_number(num) {
             var num_parts = num.toString().split(".");
@@ -586,7 +581,7 @@ export default {
         this.getLATEST_SITUATION()
         this.getSUMMARY_TABLE()
 
-        // this.getALL()
+        this.getALL()
     },
 
     created() {
@@ -613,7 +608,7 @@ export default {
 .mapboxgl-map {width: 100% !important;}
 #Mapbox__wrapper{z-index: 9; height: 60vh !important; position: relative; padding: 0px; width: 100%;}
 .mapinfo_graph {z-index: 10; position: absolute; margin-top: 1%;margin-left: 1%;}
-.marker-pop-up {border-radius: 50%; height: 5px; width: 5px;}
+.marker-pop-up {border-radius: 50%; height: 15px; width: 15px;}
 .thead-cases{font-weight: unset !important; color: #74797e; font-size: 80%;}
 .card-header{background-color: #fff;}
 
