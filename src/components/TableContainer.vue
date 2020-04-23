@@ -183,7 +183,7 @@
                                     </div>
                                 </div>
                             </div>
-
+ 
                             <div class="col-md-12 mt10" v-if="data.selectedCountry != 'worldwide'">
                                 <div class="card" style="height: 51vh;">
                                     <div class="card-body">
