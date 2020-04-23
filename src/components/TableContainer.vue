@@ -405,12 +405,14 @@ export default {
                 var array = res.data
                 var confirmed = []
                 var deaths    = []
+                var recovered = []
                 var labels    = []
 
                 array.map( (el) => {
                     labels.push( el.reportDate )
                     confirmed.push( el.totalConfirmed )
                     deaths.push( el.deaths.total)
+                    recovered.push( el.recovered.total)
                 })
 
                 var datasets = [
@@ -423,6 +425,17 @@ export default {
                         ],
                         borderColor: [
                             'rgba(0, 0, 255, 1)',
+                        ],
+                    },
+                    {
+                        label: 'Recovered',
+                        data: recovered,
+                        borderWidth: 1,
+                        backgroundColor: [
+                            'rgba(0, 255, 0, 0.1)',
+                        ],
+                        borderColor: [
+                            'rgba(0, 255, 0, 1)',
                         ],
                     },
                     {
