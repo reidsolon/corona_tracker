@@ -47,7 +47,7 @@
                                     </div>
                                     <div class="col-md-4 col-sm-4 col-4">
                                         <span class="thead-cases">Recovered</span> <br>
-                                        <strong class="l-space" :title="'Last updated '+data.mapInfo.singleRow.lastUpdate | moment('from', 'now')">{{thousand_number(data.mapInfo.singleRow.deaths.value)}}</strong>
+                                        <strong class="l-space" :title="'Last updated '+data.mapInfo.singleRow.lastUpdate | moment('from', 'now')">{{thousand_number(data.mapInfo.singleRow.recovered.value)}}</strong>
                                     </div>
                                     <div class="col-md-4 col-sm-4 col-4">
                                         <span class="thead-cases">Deaths</span> <br>
