@@ -7,6 +7,7 @@ export const setChart = (id, type, data) => {
     ctx = document.getElementById(id);
     
     myChart = new Chart(ctx, {
+        responsive: true,
         type: type,
         data: {
             labels: data.labels,

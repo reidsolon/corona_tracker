@@ -4,9 +4,9 @@
         <div class="col-md-12" id="Mapbox__wrapper">
             <div class="mapinfo_graph mt10">
                 <div class="row">
-                    <div class="col-md-12">
-                        <div class="card">
-                            <div class="card-header ">
+                    <div class="col-md-12 mt10" >
+                        <div class="card mt10" v-if="!toggleHelper">
+                            <div class="card-header">
                                 <strong><h4>Coronavirus (COVID-19)</h4></strong>
                                 Updated {{ data.mapInfo.summary.lastUpdate | moment("from", "now") }}
                             </div>
@@ -27,40 +27,46 @@
                                 </div>
 
                                 <div class="row justify-content-center" v-if="data.selectedCountry == `worldwide`">
-                                    <div class="col-md-4">
+                                    <div class="col-md-4 col-sm-4 col-4">
                                         <span class="thead-cases">Confirmed</span> <br>
                                         <strong class="l-space" >{{thousand_number(data.mapInfo.summary.confirmed.value)}}</strong>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-4 col-sm-4 col-4">
                                         <span class="thead-cases">Recovered</span> <br>
                                         <strong class="l-space" >{{thousand_number(data.mapInfo.summary.recovered.value)}}</strong>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-4 col-sm-4 col-4">
                                         <span class="thead-cases">Deaths</span> <br>
                                         <strong class="l-space">{{thousand_number(data.mapInfo.summary.deaths.value)}}</strong>
                                     </div>
                                 </div>
                                 <div class="row justify-content-center" v-else>
-                                    <div class="col-md-4">
+                                    <div class="col-md-4 col-sm-4 col-4">
                                         <span class="thead-cases">Confirmed</span> <br>
                                         <strong class="l-space" :title="'Last updated '+data.mapInfo.singleRow.lastUpdate | moment('from', 'now')">{{thousand_number(data.mapInfo.singleRow.confirmed.value)}}</strong>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-4 col-sm-4 col-4">
                                         <span class="thead-cases">Recovered</span> <br>
                                         <strong class="l-space" :title="'Last updated '+data.mapInfo.singleRow.lastUpdate | moment('from', 'now')">{{thousand_number(data.mapInfo.singleRow.deaths.value)}}</strong>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-4 col-sm-4 col-4">
                                         <span class="thead-cases">Deaths</span> <br>
                                         <strong class="l-space" :title="'Last updated '+data.mapInfo.singleRow.lastUpdate | moment('from', 'now')">{{thousand_number(data.mapInfo.singleRow.deaths.value)}}</strong>
                                     </div>
                                 </div>
 
-                                <div class="row">
-                                    <div class="col-md-12">
+                                <div class="row mt10">
+                                    <div class="col-md-6 col-6">
                                         <span class="thead-cases">Source: <a :href="data.mapInfo.summary.source" target="_blank"><u>MathroidAPI</u></a></span>
+                                    </div>
+                                    <div class="col-md-6 col-6" style="text-align: right; cursor: pointer;">
+                                        <span class="thead-cases" @click="toggle(true)">Close</span>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div style="margin-top: 100%;" v-else>
+                            <button @click="toggle(false)">Show</button>
                         </div>
                     </div>
                     
@@ -167,15 +173,13 @@
                             </div>
 
                             <div class="col-md-12 mt10">
-                                <div class="card" style="height: 55vh;">
+                                <div class="card">
                                     <div class="card-body">
-                                        <!-- <h5>New cases over time</h5> -->
                                         <h5>Overall cases over time</h5>
-                                        <!-- <h6 v-if="data.selectedCountry == `worldwide`">Worldwide</h6>
-                                        <h6 v-else>{{data.selectedCountry.name}}</h6> -->
-                                        <div class="chart-container" style="position: relative; height:40vh; width:100%;">
+                                        <div class="chart-container" style="position: relative; width:100%;">
                                             <canvas id="new_cases_chart"></canvas>
                                         </div>
+                                        <div class="mt10"></div>
                                         <span  class="thead-cases">New cases are the confirmed cases reported since the previous day</span><br>
                                         <span v-if="data.selectedCountry == 'worldwide'" class="thead-cases">Updated {{ data.mapInfo.summary.lastUpdate | moment("from", "now") }}. Source: <a href="'https://api.covid19api.com/summary" target="_blank">Covid19 API</a></span>
                                         <span v-else class="thead-cases">Updated {{ data.mapInfo.summary.lastUpdate | moment("from", "now") }}. Source: <a :href="'https://api.covid19api.com/country/'+data.selectedCountry.name" target="_blank">Covid19 API</a></span>
@@ -185,20 +189,22 @@
                             </div>
  
                             <div class="col-md-12 mt10" v-if="data.selectedCountry != 'worldwide'">
-                                <div class="card" style="height: 51vh;">
+                                <div class="card">
                                     <div class="card-body">
                                         <h5>Cases over time</h5>
                                         <h6 v-if="data.selectedCountry == `worldwide`">Worldwide</h6>
                                         <h6 v-else>{{data.selectedCountry.name}} 
                                             (
-                                                Out of  <span class="dodgerblue"><strong>{{data.mapInfo.singleRow.confirmed.value}}</strong></span> confirmed cases <span class="crimson"><strong>{{((data.mapInfo.singleRow.deaths.value / data.mapInfo.singleRow.confirmed.value) * 100).toFixed(2)}}%</strong></span> of it died. 
+                                                Out of  <span class="dodgerblue">
+                                                            <strong>{{data.mapInfo.singleRow.confirmed.value}}</strong></span> confirmed cases <span class="crimson"><strong>{{((data.mapInfo.singleRow.deaths.value / data.mapInfo.singleRow.confirmed.value) * 100).toFixed(2)}}%</strong></span> of it died. 
                                                 However, <span class="limegreen"><strong>{{ ((data.mapInfo.singleRow.recovered.value / data.mapInfo.singleRow.confirmed.value) * 100).toFixed(2)}}%</strong></span> of it has recovered
                                             )
                                         
                                         </h6>
-                                        <div class="chart-container" style="position: relative; height:40vh; width:100%;">
+                                        <div class="chart-container" style="position: relative;width:100%;">
                                             <canvas id="cases_chart"></canvas>
                                         </div>
+                                        <div class="mt10"></div>
                                         <span v-if="data.selectedCountry == 'worldwide'" class="thead-cases">Updated {{ data.mapInfo.summary.lastUpdate | moment("from", "now") }}. Source: <a href="'https://api.covid19api.com/summary" target="_blank">Covid19 API</a></span>
                                         <span v-else class="thead-cases">Updated {{ data.mapInfo.summary.lastUpdate | moment("from", "now") }}. Source: <a :href="'https://api.covid19api.com/country/'+data.selectedCountry.name" target="_blank">Covid19 API</a></span>
                                     </div>
@@ -227,28 +233,36 @@
 
                     <div class="col-md-4">
                         <div class="row">
-                            <div class="col-md-12">
-                                <div class="card" style="overflow: scroll;">
-                                    <div class="card-body">
-                                        <h5>Top News 
+                            <div class="col-md-12 col-sm-12 col-12">
+                                <div class="card">
+                                    <div class="card-body no-p-bottom">
+                                        <h6>Top News 
                                             <span v-if="data.selectedCountry != 'worldwide'">for {{data.selectedCountry.name}}</span>
-                                        </h5>
+                                        </h6>
                                         <hr>
                                     </div>
                                     <template v-if="!data.news.loadingNews">
-                                        <div class="card-body no-p-top" v-for="(news, index) in data.news.newsRow.articles" :key="index" >
-                                            <div class="row" >
-                                                <div class="col-md-8" >
-                                                    <strong><a style="color: #111;" target="_blank" :href="news.url">{{news.title}}</a></strong>
+                                        <div class="card-body no-p-top no-p-bottom" v-for="(news, index) in data.news.newsRow.articles" :key="index" >
+                                            <a :href="news.url"><div class="row" >
+                                                <div class="col-md-8 col-8 col-sm-8" >
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <span class="thead-cases">{{news.source.name}}</span>
+                                                        </div>
+                                                        <div class="col-md-12 mt5">
+                                                            <strong><a style="color: #111;" target="_blank">{{news.title}}</a></strong>
+                                                        </div>
+                                                    </div>
+                                                    
                                                 </div>
-                                                <div class="col-md-4" v-if="news.urlToImage">
+                                                <div class="col-md-4 col-sm-4 col-4" v-if="news.urlToImage">
                                                     <img :src="news.urlToImage" style="width: 100%; height: 6vh; border-radius: 10px;">
                                                 </div>
-                                                <div class="card-body thead-cases col-md-12">
-                                                    <!-- Source: <a :href="news.url" target="_blank" >{{news.source.name}} </a> -->
+                                                <div class="card-body thead-cases col-md-12 no-p-bottom">
                                                     {{ news.publishedAt | moment("from", "now") }}
                                                 </div>
                                             </div>
+                                            </a>
                                             <hr>
                                         </div>
                                         
@@ -286,10 +300,11 @@
                                                 <span class="sr-only">Loading...</span>
                                             </div>
                                         </div>
-                                        <div class="mt10"></div>
                                     </template>
                                     
                                 </div>
+                                
+                                <div class="mt10"></div>
                             </div>
                         </div>
                     </div>
@@ -327,6 +342,7 @@ export default {
     },
     data(){
         return {
+            toggleHelper: false,
             newsAPI: {
                 apiKey: '993811875ccc4e37adefa84c45cfd597',
             },
@@ -361,6 +377,9 @@ export default {
         }
     },
     methods: {
+        toggle(bool) {
+            this.toggleHelper = bool
+        },
         defaultCountry() {
             this.data.selectedCountry = 'worldwide'
             this.data.map.center = [0,0]
@@ -552,7 +571,8 @@ export default {
             
         },
 
-        populateChart(country) {
+        populateChart(country, chartType = 'line') {
+            var type = chartType
             var url = `https://api.covid19api.com/country/${country}`
             axios.get(url)
             .then( res => {
@@ -617,7 +637,7 @@ export default {
                     datasets,
                     labels
                 }
-                setChart('cases_chart', 'line', processed)
+                setChart('cases_chart', type, processed)
             })
             .catch( err => {
                 console.log(err)
@@ -674,6 +694,8 @@ export default {
 .no-bb{border-bottom: unset;}
 .no-bt{border-top: unset;}
 .no-p-top{padding-top: unset;}
+.no-p-bottom {padding-bottom: unset;}
+.no-padding {padding: unset;}
 .mt10 {margin-top: 5%;}
 .mt5 {margin-top: 2%;}
 
