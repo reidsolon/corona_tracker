@@ -1,13 +1,13 @@
 <template>
     <div class="row" style="padding: 0px;">
-        <Navigation></Navigation>
-            <div class="col-md-12" style="padding: 0px; width: 100%;">
+        <!-- <Navigation></Navigation> -->
+            <!-- <div class="col-md-12" style="padding: 0px; width: 100%;">
                 <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
-                    <div class="opacity__wrapper"></div>
+                    <div class="opacity__wrapper"></div> -->
                     <!-- <ol class="carousel-indicators">
                         <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active" v-for="(news, index) in newsRow.articles" :key="index"></li>
                     </ol> -->
-                    <div class="carousel-inner">
+                    <!-- <div class="carousel-inner">
                         <div class="carousel-item" v-for="(news, index) in newsRow.articles" :key="index" :class="{'active': index == 0 }">
                             <img class="d-block" :src="news.urlToImage" alt="First slide" style="height: 80vh; width: 100%;">
                             <div class="carousel-caption d-none d-md-block" :class="{'animate' : index == index}">
@@ -26,7 +26,8 @@
                         <span class="sr-only">Next</span>
                     </a>
                 </div>
-            </div>
+            </div> -->
+            I am current working for this page. Ill update you soon as soon it is done.
     </div>
 </template>
 <script>
@@ -55,7 +56,7 @@ export default {
         },
     },
     mounted() {
-        this.getLATEST_NEWS()
+        // this.getLATEST_NEWS()
     }
 }
 </script>
