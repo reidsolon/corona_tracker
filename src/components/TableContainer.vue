@@ -256,7 +256,7 @@
                                                     
                                                 </div>
                                                 <div class="col-md-4 col-sm-4 col-4" v-if="news.urlToImage">
-                                                    <img :src="news.urlToImage" style="width: 100%; height: 6vh; border-radius: 10px;">
+                                                    <img :src="news.urlToImage" style="width: 100%; height: 8vh; border-radius: 10px;">
                                                 </div>
                                                 <div class="card-body thead-cases col-md-12 no-p-bottom">
                                                     {{ news.publishedAt | moment("from", "now") }}
