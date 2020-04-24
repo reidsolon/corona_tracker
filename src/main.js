@@ -8,6 +8,8 @@ import VueRouter from 'vue-router'
 import TableContainer from './components/TableContainer'
 import News from './components/News'
 
+import {store} from './includes/store/store'
+
 Vue.use(VueRouter)
 
 Vue.use(VueMapbox, { mapboxgl: Mapbox });
@@ -26,6 +28,7 @@ const router = new VueRouter({
 })
 
 new Vue({
+  store,
   router,
   render: h => h(App),
 }).$mount('#app')

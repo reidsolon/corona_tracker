@@ -146,7 +146,7 @@
                                                     <th scope="col" class="no-bt thead-cases no-bb">Deaths</th>
                                                 </tr>
                                             </thead>
-                                            <tbody v-if="data.mapInfo.tableRow != []">
+                                            <tbody v-if="data.mapInfo.tableRow">
                                                 <tr>
                                                     <th scope="col">Worldwide</th>
                                                     <th scope="col">{{thousand_number(data.mapInfo.summary.confirmed.value)}}</th>
@@ -350,30 +350,30 @@ export default {
                 accessToken: 'pk.eyJ1IjoicmVpZHNvbG9uIiwiYSI6ImNqcnZpZThzMTAyN2Ezemx4eHMzM2RoZGwifQ.j65VGpYO6g84DnR1koippQ',
                 mapStyle: `mapbox://styles/mapbox/dark-v10?optimize=true?access_token=pk.eyJ1IjoicmVpZHNvbG9uIiwiYSI6ImNqcnZpZThzMTAyN2Ezemx4eHMzM2RoZGwifQ.j65VGpYO6g84DnR1koippQ`,
             },
-            markers:[],
-            data: {
-                countries: {
-                    row: [],
-                },
-                map: {
-                    row: [],
-                    center: [0,0],
-                    zoom: parseInt(1)
-                },
+            // data: {
+            //     countries: {
+            //         row: [],
+            //     },
+            //     map: {
+            //         row: [],
+            //         center: [0,0],
+            //         zoom: parseInt(1)
+            //     },
 
-                mapInfo: {
-                    summary: [],
-                    tableRow: [],
-                    singleRow: {},
-                },
-                news: {
-                    loadingNews: false,
-                    latestSituations: [],
-                    newsRow: []
-                },
-                selectedByType: 'confirmed',
-                selectedCountry: 'worldwide'
-            }
+            //     mapInfo: {
+            //         summary: [],
+            //         tableRow: [],
+            //         singleRow: {},
+            //     },
+            //     news: {
+            //         loadingNews: false,
+            //         latestSituations: [],
+            //         newsRow: []
+            //     },
+            //     selectedByType: 'confirmed',
+            //     selectedCountry: 'worldwide'
+            // }
+            data: this.$store.state.tableContainer
         }
     },
     methods: {
@@ -381,9 +381,12 @@ export default {
             this.toggleHelper = bool
         },
         defaultCountry() {
-            this.data.selectedCountry = 'worldwide'
-            this.data.map.center = [0,0]
-            this.data.map.zoom = parseInt(1)
+            // this.data.selectedCountry = 'worldwide'
+            // this.data.map.center = [0,0]
+            // this.data.map.zoom = parseInt(1)
+            this.$store.state.tableContainer.selectedCountry = 'worldwide'
+            this.$store.state.tableContainer.map.center = [0,0]
+            this.$store.state.tableContainer.map.zoom = parseInt(1)
         },
         thousand_number(num) {
             var num_parts = num.toString().split(".");
@@ -393,7 +396,8 @@ export default {
         getAPI() {
             axios.get('https://api.covid19api.com/')
             .then( res => {
-                this.data.api = JSON.parse(JSON.stringify(res.data))
+                // this.data.api = JSON.parse(JSON.stringify(res.data))
+                this.$store.state.tableContainer.api = JSON.parse(JSON.stringify(res.data))
             })
             .catch( res => {
                 console.log(res)
@@ -411,10 +415,12 @@ export default {
         },
 
         getCOUNTRY_DETAILS(country = 'Philippines') {
-            this.data.countries.details = []
+            // this.data.countries.details = []
+            this.$store.state.tableContainer.countries.details = []
             axios.get(`https://api.covid19api.com/country/${country}`)
             .then( res => {
-                this.data.map.row = res.data
+                // this.data.map.row = res.data
+                this.$store.state.tableContainer.map.row = res.data
             })
             .catch( err => {
                 console.log(err)
@@ -424,7 +430,8 @@ export default {
         getCOUNTRIES() {
             axios.get('https://covid19.mathdro.id/api/countries')
             .then( res => {
-                this.data.countries.row = res.data.countries
+                // this.data.countries.row = res.data.countries
+                this.$store.state.tableContainer.countries.row = res.data.countries
             })
             .catch( err => {
                 console.log(err)
@@ -444,7 +451,8 @@ export default {
         getSUMMARY() {
             axios.get(`https://covid19.mathdro.id/api/`)
             .then( res => {
-                this.data.mapInfo.summary = res.data
+                // this.data.mapInfo.summary = res.data
+                this.$store.state.tableContainer.mapInfo.summary = res.data
             })
             .catch( err => {
                 console.log(err)
@@ -517,7 +525,8 @@ export default {
             var url = `https://covid19-news.herokuapp.com/api/covid19/latest-situations`
             axios.get(url)
             .then( res => {
-                this.data.news.latestSituations = res.data
+                // this.data.news.latestSituations = res.data
+                this.$store.state.tableContainer.news.latestSituations = res.data
             })
             .catch( err => {
                 console.log(err)
@@ -525,7 +534,8 @@ export default {
         },
 
         getLATEST_NEWS(country = this.data.selectedCountry) {
-            this.data.news.loadingNews = true
+            // this.data.news.loadingNews = true
+            this.$store.state.tableContainer.news.loadingNews = true
             var url 
             if(country != 'worldwide') {
                 url = `https://newsapi.org/v2/everything?q=covid%20news%20in%20${country.name}&from=2020-03-24&sortBy=publishedAt&apiKey=993811875ccc4e37adefa84c45cfd597`
@@ -535,15 +545,17 @@ export default {
             
             axios.get(url)
             .then(res => {
-                this.data.news.newsRow = res.data
-                this.data.news.loadingNews = false
+                // this.data.news.newsRow = res.data
+                // this.data.news.loadingNews = false
+                this.$store.state.tableContainer.news.newsRow = res.data
+                this.$store.state.tableContainer.news.loadingNews = false
             })
             .catch(err => {
                 console.log(err)
             })
         },
 
-        getSUMMARY_TABLE(country = this.data.selectedCountry) {
+        getSUMMARY_TABLE(country = this.$store.state.tableContainer.selectedCountry) {
             this.getLATEST_NEWS()
             var url = ''
             if(country == 'worldwide') {
