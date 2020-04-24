@@ -228,12 +228,39 @@
                     <div class="col-md-4">
                         <div class="row">
                             <div class="col-md-12">
-                                <div class="card" style="height: 55vh;">
+                                <div class="card" style="overflow: scroll;">
                                     <div class="card-body">
                                         <h5>Top News 
                                             <span v-if="data.selectedCountry != 'worldwide'">for {{data.selectedCountry.name}}</span>
                                         </h5>
+                                        <hr>
                                     </div>
+                                    <template v-if="!data.news.loadingNews">
+                                        <div class="card-body no-p-top" v-for="(news, index) in data.news.newsRow.articles" :key="index" >
+                                            <div class="row" >
+                                                <div class="col-md-8" >
+                                                    <strong><a style="color: #111;" target="_blank" :href="news.url">{{news.title}}</a></strong>
+                                                </div>
+                                                <div class="col-md-4" v-if="news.urlToImage">
+                                                    <img :src="news.urlToImage" style="width: 100%; height: 6vh; border-radius: 10px;">
+                                                </div>
+                                                <div class="card-body thead-cases col-md-12">
+                                                    <!-- Source: <a :href="news.url" target="_blank" >{{news.source.name}} </a> -->
+                                                    {{ news.publishedAt | moment("from", "now") }}
+                                                </div>
+                                            </div>
+                                            <hr>
+                                        </div>
+                                        
+                                    </template>
+                                    <template v-else>
+                                        <div class="text-center">
+                                            <div class="spinner-border" role="status">
+                                                <span class="sr-only">Loading...</span>
+                                            </div>
+                                        </div>
+                                        <div class="mt10"></div>
+                                    </template>
                                 </div>
                             </div>
 
@@ -300,6 +327,9 @@ export default {
     },
     data(){
         return {
+            newsAPI: {
+                apiKey: '993811875ccc4e37adefa84c45cfd597',
+            },
             mapboxConfig: {
                 accessToken: 'pk.eyJ1IjoicmVpZHNvbG9uIiwiYSI6ImNqcnZpZThzMTAyN2Ezemx4eHMzM2RoZGwifQ.j65VGpYO6g84DnR1koippQ',
                 mapStyle: `mapbox://styles/mapbox/dark-v10?optimize=true?access_token=pk.eyJ1IjoicmVpZHNvbG9uIiwiYSI6ImNqcnZpZThzMTAyN2Ezemx4eHMzM2RoZGwifQ.j65VGpYO6g84DnR1koippQ`,
@@ -321,6 +351,7 @@ export default {
                     singleRow: {},
                 },
                 news: {
+                    loadingNews: false,
                     latestSituations: [],
                     newsRow: []
                 },
@@ -474,7 +505,27 @@ export default {
             })
         },
 
+        getLATEST_NEWS(country = this.data.selectedCountry) {
+            this.data.news.loadingNews = true
+            var url 
+            if(country != 'worldwide') {
+                url = `http://newsapi.org/v2/everything?q=covid%20news%20in%20${country.name}&from=2020-03-24&sortBy=publishedAt&apiKey=993811875ccc4e37adefa84c45cfd597`
+            } else {
+                url = `http://newsapi.org/v2/everything?q=covid%20news&from=2020-03-24&sortBy=publishedAt&apiKey=993811875ccc4e37adefa84c45cfd597`
+            }
+            
+            axios.get(url)
+            .then(res => {
+                this.data.news.newsRow = res.data
+                this.data.news.loadingNews = false
+            })
+            .catch(err => {
+                console.log(err)
+            })
+        },
+
         getSUMMARY_TABLE(country = this.data.selectedCountry) {
+            this.getLATEST_NEWS()
             var url = ''
             if(country == 'worldwide') {
                 url = 'https://api.covid19api.com/summary'
@@ -579,6 +630,7 @@ export default {
         this.getCOUNTRIES()
         this.getSUMMARY()
         this.getLATEST_SITUATION()
+        this.getLATEST_NEWS()
         this.getSUMMARY_TABLE()
 
         // this.getALL()

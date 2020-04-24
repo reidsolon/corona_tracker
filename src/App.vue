@@ -1,17 +1,18 @@
 <template>
   <div id="app">
     <div class="container-fluid">
-        <TableContainer></TableContainer>
+        <router-view></router-view>
+        <!-- <TableContainer></TableContainer> -->
     </div>
   </div>
 </template>
 
 <script>
-import TableContainer from './components/TableContainer'
+// import TableContainer from './components/TableContainer'
 export default {
   name: 'App',
   components: {
-    TableContainer
+    // TableContainer
   }
 }
 </script>
