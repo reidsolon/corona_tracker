@@ -509,9 +509,9 @@ export default {
             this.data.news.loadingNews = true
             var url 
             if(country != 'worldwide') {
-                url = `http://newsapi.org/v2/everything?q=covid%20news%20in%20${country.name}&from=2020-03-24&sortBy=publishedAt&apiKey=993811875ccc4e37adefa84c45cfd597`
+                url = `https://newsapi.org/v2/everything?q=covid%20news%20in%20${country.name}&from=2020-03-24&sortBy=publishedAt&apiKey=993811875ccc4e37adefa84c45cfd597`
             } else {
-                url = `http://newsapi.org/v2/everything?q=covid%20news&from=2020-03-24&sortBy=publishedAt&apiKey=993811875ccc4e37adefa84c45cfd597`
+                url = `https://newsapi.org/v2/everything?q=covid%20news&from=2020-03-24&sortBy=publishedAt&apiKey=993811875ccc4e37adefa84c45cfd597`
             }
             
             axios.get(url)

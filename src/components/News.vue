@@ -43,7 +43,7 @@ export default {
     },
     methods: {
         getLATEST_NEWS() {
-            var url = `http://newsapi.org/v2/everything?q=covid%20news&from=2020-03-24&sortBy=publishedAt&apiKey=993811875ccc4e37adefa84c45cfd597`
+            var url = `https://newsapi.org/v2/everything?q=covid%20news&from=2020-03-24&sortBy=publishedAt&apiKey=993811875ccc4e37adefa84c45cfd597`
         
             axios.get(url)
             .then(res => {
