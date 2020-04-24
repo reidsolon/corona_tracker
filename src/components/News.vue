@@ -32,10 +32,10 @@
 </template>
 <script>
 const axios = require('axios')
-import Navigation from './Navigation'
+// import Navigation from './Navigation'
 export default {
     components: {
-        Navigation,
+        // Navigation,
     },
     data() {
         return {
@@ -49,7 +49,7 @@ export default {
             axios.get(url)
             .then(res => {
                 this.newsRow = res.data
-            })
+            }) 
             .catch(err => {
                 console.log(err)
             })
