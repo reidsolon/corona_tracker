@@ -21,32 +21,37 @@
                                 </div>
 
                                 <div class="row justify-content-center" v-if="data.selectedCountry == `worldwide`">
-                                    <div class="col-md-4 col-sm-4 col-4">
-                                        <span class="thead-cases">Confirmed</span> <br>
-                                        <strong class="l-space" >{{thousand_number(data.mapInfo.summary.confirmed.value)}}</strong>
-                                    </div>
-                                    <div class="col-md-4 col-sm-4 col-4">
-                                        <span class="thead-cases">Recovered</span> <br>
-                                        <strong class="l-space" >{{thousand_number(data.mapInfo.summary.recovered.value)}}</strong>
-                                    </div>
-                                    <div class="col-md-4 col-sm-4 col-4">
-                                        <span class="thead-cases">Deaths</span> <br>
-                                        <strong class="l-space">{{thousand_number(data.mapInfo.summary.deaths.value)}}</strong>
-                                    </div>
+                                    <template v-if="data.mapInfo.summary != null">
+                                        <div class="col-md-4 col-sm-4 col-4">
+                                            <span class="thead-cases">Confirmed</span> <br>
+                                            <strong class="l-space" >{{thousand_number(data.mapInfo.summary.confirmed.value)}}</strong>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4 col-4">
+                                            <span class="thead-cases">Recovered</span> <br>
+                                            <strong class="l-space" >{{thousand_number(data.mapInfo.summary.recovered.value)}}</strong>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4 col-4">
+                                            <span class="thead-cases">Deaths</span> <br>
+                                            <strong class="l-space">{{thousand_number(data.mapInfo.summary.deaths.value)}}</strong>
+                                        </div>
+                                    </template>
+                                    
                                 </div>
                                 <div class="row justify-content-center" v-else>
-                                    <div class="col-md-4 col-sm-4 col-4">
-                                        <span class="thead-cases">Confirmed</span> <br>
-                                        <strong class="l-space" :title="'Last updated '+data.mapInfo.singleRow.lastUpdate | moment('from', 'now')">{{thousand_number(data.mapInfo.singleRow.confirmed.value)}}</strong>
-                                    </div>
-                                    <div class="col-md-4 col-sm-4 col-4">
-                                        <span class="thead-cases">Recovered</span> <br>
-                                        <strong class="l-space" :title="'Last updated '+data.mapInfo.singleRow.lastUpdate | moment('from', 'now')">{{thousand_number(data.mapInfo.singleRow.recovered.value)}}</strong>
-                                    </div>
-                                    <div class="col-md-4 col-sm-4 col-4">
-                                        <span class="thead-cases">Deaths</span> <br>
-                                        <strong class="l-space" :title="'Last updated '+data.mapInfo.singleRow.lastUpdate | moment('from', 'now')">{{thousand_number(data.mapInfo.singleRow.deaths.value)}}</strong>
-                                    </div>
+                                    <template v-if="data.mapInfo.singleRow != null">
+                                        <div class="col-md-4 col-sm-4 col-4">
+                                            <span class="thead-cases">Confirmed</span> <br>
+                                            <strong class="l-space" :title="'Last updated '+data.mapInfo.singleRow.lastUpdate | moment('from', 'now')">{{thousand_number(data.mapInfo.singleRow.confirmed.value)}}</strong>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4 col-4">
+                                            <span class="thead-cases">Recovered</span> <br>
+                                            <strong class="l-space" :title="'Last updated '+data.mapInfo.singleRow.lastUpdate | moment('from', 'now')">{{thousand_number(data.mapInfo.singleRow.recovered.value)}}</strong>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4 col-4">
+                                            <span class="thead-cases">Deaths</span> <br>
+                                            <strong class="l-space" :title="'Last updated '+data.mapInfo.singleRow.lastUpdate | moment('from', 'now')">{{thousand_number(data.mapInfo.singleRow.deaths.value)}}</strong>
+                                        </div>
+                                    </template>
                                 </div>
 
                                 <div class="row mt10">
@@ -179,7 +184,7 @@
                                             </div>
                                         </div>
                                         <div class="row" v-else>
-                                            <template v-if="data.mapInfo.tableRow != null">
+                                            <template v-if="data.mapInfo.tableRow != {} && data.selectedCountry != 'worldwide'">
                                                 <div class="col-md-4 col-4">
                                                     <div class="card">
                                                         <div class="card-body no-p-top no-p-bottom">
@@ -613,7 +618,7 @@ export default {
         },
 
         getSUMMARY_TABLE(country = this.$store.state.tableContainer.selectedCountry) {
-            if(this.selectedCountry == 'worldwide') {
+            if(country == 'worldwide') {
                 this.getSUMMARY()
             }
             this.$store.state.tableContainer.mapInfo.loadingSpecific = false

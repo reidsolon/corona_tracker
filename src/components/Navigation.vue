@@ -52,20 +52,21 @@ export default {
             }
         },
         
-        getLATEST_NEWS(country = this.$store.state.tableContainer.selectedCountry) {
-            // this.data.news.loadingNews = true
+        getLATEST_NEWS(country = this.data.selectedCountry) {
             this.$store.state.tableContainer.news.loadingNews = true
             var url 
             if(country != 'worldwide') {
-                url = `https://newsapi.org/v2/everything?q=covid%20news%20in%20${country.name}&from=2020-03-24&sortBy=publishedAt&apiKey=993811875ccc4e37adefa84c45cfd597`
+                var date = new Date()
+                var endDate = date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate()
+                url = `https://newsapi.org/v2/everything?q=covid%20news%20in%20${country.name}&from=${endDate}&sortBy=publishedAt&apiKey=993811875ccc4e37adefa84c45cfd597`
             } else {
-                url = `https://newsapi.org/v2/everything?q=covid%20news&from=2020-03-24&sortBy=publishedAt&apiKey=993811875ccc4e37adefa84c45cfd597`
+                var date1 = new Date()
+                var endDate1 = date1.getFullYear()+'-'+(date1.getMonth()+1)+'-'+date1.getDate()
+                url = `https://newsapi.org/v2/everything?q=covid%20news&from=${endDate1}&sortBy=publishedAt&apiKey=993811875ccc4e37adefa84c45cfd597`
             }
             
             axios.get(url)
             .then(res => {
-                // this.data.news.newsRow = res.data
-                // this.data.news.loadingNews = false
                 this.$store.state.tableContainer.news.newsRow = res.data
                 this.$store.state.tableContainer.news.loadingNews = false
             })
@@ -75,6 +76,11 @@ export default {
         },
 
         getSUMMARY_TABLE(country = this.$store.state.tableContainer.selectedCountry) {
+            if(country == 'worldwide') {
+                this.getSUMMARY()
+            }
+            this.$store.state.tableContainer.mapInfo.loadingSpecific = false
+
             this.getLATEST_NEWS()
             var url = ''
             if(country == 'worldwide') {
@@ -82,7 +88,7 @@ export default {
 
                 axios.get(url)
                 .then( res => {
-                    this.data.mapInfo.tableRow = res.data.Countries
+                    this.data.mapInfo.tableRow = res.data
                 })
                 .catch( err => {
                     console.log(err)
@@ -99,6 +105,92 @@ export default {
                     console.log(err)
                 })
             }
+
+            if(this.data.selectedCountry != 'worldwide') {
+                var url2 = `https://api.coronatracker.com/v3/stats/worldometer/country?countryCode=${country.iso2}`
+                axios.get(url2)
+                .then( res => {
+                    this.data.mapInfo.specificSummary = res.data[0]
+                    this.$store.state.tableContainer.mapInfo.loadingSpecific = true
+                })
+                .catch( err => {
+                    console.log(err)
+                })
+            }
+            
+
+            var date = new Date()
+            var month
+            var currentMonth = parseInt(date.getMonth() + 1)
+            if(currentMonth < 10) {
+                month = `0${currentMonth}`
+            } else {
+                month = currentMonth
+            }
+            var endDate = date.getFullYear()+'-'+month+'-'+date.getDate()
+
+            var url3 = `https://api.coronatracker.com/v3/analytics/trend/country?countryCode=${country.iso2}&startDate=2020-04-11&endDate=${endDate}`
+            axios.get(url3)
+            .then( res => {
+                var array = res.data
+                var confirmed = []
+                var deaths    = []
+                var recovered = []
+                var labels    = []
+
+                array.map( (el) => {
+                    var label = new Date(el.last_updated)
+                    labels.push( (label.getMonth() + 1) + '-'+label.getDate() )
+                    confirmed.push( el.total_confirmed )
+                    deaths.push( el.total_deaths)
+                    recovered.push( el.total_recovered)
+                })
+
+                var datasets = [
+                    {
+                        label: 'Confirmed',
+                        data: confirmed,
+                        borderWidth: 1,
+                        backgroundColor: [
+                            'rgba(0, 0, 255, 0.1)',
+                        ],
+                        borderColor: [
+                            'rgba(0, 0, 255, 1)',
+                        ],
+                    },
+                    {
+                        label: 'Recovered',
+                        data: recovered,
+                        borderWidth: 1,
+                        backgroundColor: [
+                            'rgba(0, 255, 0, 0.1)',
+                        ],
+                        borderColor: [
+                            'rgba(0, 255, 0, 1)',
+                        ],
+                    },
+                    {
+                        label: 'Died',
+                        data: deaths,
+                        borderWidth: 1,
+                        backgroundColor: [
+                            'rgba(255, 0, 0, 0.1)',
+                        ],
+                        borderColor: [
+                            'rgba(255, 0, 0, 1)',
+                        ],
+                    },
+                ]
+
+                var processed = {
+                    datasets,
+                    labels
+                }
+                setChart('country_new_cases', 'line', processed)
+            })
+            .catch( err => {
+                console.log(err)
+            })
             
         },
 
