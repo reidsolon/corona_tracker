@@ -16,7 +16,7 @@ Vue.use(VueMapbox, { mapboxgl: Mapbox });
 Vue.use(VueMoment);
 Vue.config.productionTip = false
 
-Vue.component()
+Vue.component('loading-line', require('./components/Reusable/LoadingContent.vue').default )
 
 const routes = [
   { path: '/', component: TableContainer },

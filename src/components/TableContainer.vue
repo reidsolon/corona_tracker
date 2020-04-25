@@ -130,7 +130,122 @@
                 <div class="row"> 
                     <div class="col-md-8">
                         <div class="row">
+                            <!-- ph -->
                             <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 v-if="data.selectedCountry != 'worldwide'">{{data.selectedCountry.name}} Today</h5>
+                                        <h5 v-else>Worldwide today</h5>
+                                        <span class="thead-cases">{{dateToday}}</span>
+                                        <hr>
+                                        <div class="row" v-if="data.selectedCountry != 'worldwide'">
+                                            <div class="col-md-4 col-4">
+                                                <div class="card">
+                                                    <div class="card-body no-p-top no-p-bottom">
+                                                        <template v-if="data.mapInfo.loadingSpecific">
+                                                            <span class="thead-cases">Confirmed</span>
+                                                            <h3>{{thousand_number(data.mapInfo.specificSummary.totalConfirmed)}}</h3>
+                                                            <h6 class="crimson" v-if="data.mapInfo.specificSummary.dailyConfirmed > 0">+{{data.mapInfo.specificSummary.dailyConfirmed}} new cases</h6>
+                                                            <h6 class="crimson" v-else>--</h6>
+                                                        </template>
+                                                        <template v-else>
+                                                            <loading-line></loading-line>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 col-4">
+                                                <div class="card"> 
+                                                    <div class="card-body no-p-top no-p-bottom">
+                                                        <template v-if="data.mapInfo.loadingSpecific">
+                                                            <span class="thead-cases">Recovered</span>
+                                                            <h3>{{thousand_number(data.mapInfo.specificSummary.totalRecovered)}}</h3>
+                                                            <h6 class="crimson">--</h6>
+                                                        </template>
+                                                        <template v-else>
+                                                            <loading-line></loading-line>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 col-4">
+                                                <div class="card">
+                                                    <div class="card-body no-p-top no-p-bottom">
+                                                        <template v-if="data.mapInfo.loadingSpecific">
+                                                            <span class="thead-cases">Deaths</span>
+                                                            <h3>{{thousand_number(data.mapInfo.specificSummary.totalDeaths)}}</h3>
+                                                            <h6 class="crimson" v-if="data.mapInfo.specificSummary.dailyConfirmed > 0">+{{data.mapInfo.specificSummary.dailyDeaths}} new death</h6>
+                                                            <h6 class="crimson" v-else>--</h6>
+                                                        </template>
+                                                        <template v-else>
+                                                            <loading-line></loading-line>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row" v-else>
+                                            <div class="col-md-4 col-4">
+                                                <div class="card">
+                                                    <div class="card-body no-p-top no-p-bottom">
+                                                        <template>
+                                                            <span class="thead-cases">Confirmed</span>
+                                                            <h3>{{thousand_number(data.mapInfo.summary.confirmed.value)}}</h3>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 col-4">
+                                                <div class="card"> 
+                                                    <div class="card-body no-p-top no-p-bottom">
+                                                        <template>
+                                                            <span class="thead-cases">Recovered</span>
+                                                            <h3>{{thousand_number(data.mapInfo.summary.recovered.value)}}</h3>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 col-4">
+                                                <div class="card">
+                                                    <div class="card-body no-p-top no-p-bottom">
+                                                        <template>
+                                                            <span class="thead-cases">Deaths</span>
+                                                            <h3>{{thousand_number(data.mapInfo.summary.deaths.value)}}</h3>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        Cases over time
+                                        <hr>
+                                    </div>
+                                    <div class="chart-container" style="position: relative; width:100%;">
+                                        <canvas id="country_new_cases"></canvas>
+                                    </div>
+
+                                    <div class="card-body" v-if="data.selectedCountry != 'worldwide'">
+                                        <h6 v-if="data.selectedCountry == `worldwide`">Worldwide</h6>
+                                        <h6 v-else>{{data.selectedCountry.name}} 
+                                            (
+                                                Out of  <span class="dodgerblue">
+                                                            <strong>{{data.mapInfo.singleRow.confirmed.value}}</strong></span> confirmed cases <span class="crimson"><strong>{{((data.mapInfo.singleRow.deaths.value / data.mapInfo.singleRow.confirmed.value) * 100).toFixed(2)}}%</strong></span> of it died. 
+                                                However, <span class="limegreen"><strong>{{ ((data.mapInfo.singleRow.recovered.value / data.mapInfo.singleRow.confirmed.value) * 100).toFixed(2)}}%</strong></span> of it has recovered
+                                            )
+                                        
+                                        </h6>
+                                        <div class="chart-container" style="position: relative;width:100%;">
+                                            <canvas id="cases_chart"></canvas>
+                                        </div>
+                                        <div class="mt10"></div>
+                                        <span v-if="data.selectedCountry == 'worldwide'" class="thead-cases">Updated {{ data.mapInfo.summary.lastUpdate | moment("from", "now") }}. Source: <a href="'https://api.covid19api.com/summary" target="_blank">Covid19 API</a></span>
+                                        <span v-else class="thead-cases">Updated {{ data.mapInfo.summary.lastUpdate | moment("from", "now") }}. Source: <a :href="'https://api.covid19api.com/country/'+data.selectedCountry.name" target="_blank">Covid19 API</a></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 mt10">
                                 <div class="card" style="height: 55vh;">
                                     <div class="card-body">
                                         <h5>Cases</h5>
@@ -175,7 +290,7 @@
                             <div class="col-md-12 mt10">
                                 <div class="card">
                                     <div class="card-body">
-                                        <h5>Overall cases over time</h5>
+                                        <h5>Cases over time</h5>
                                         <div class="chart-container" style="position: relative; width:100%;">
                                             <canvas id="new_cases_chart"></canvas>
                                         </div>
@@ -187,29 +302,6 @@
                                     </div>
                                 </div>
                             </div>
- 
-                            <div class="col-md-12 mt10" v-if="data.selectedCountry != 'worldwide'">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h5>Cases over time</h5>
-                                        <h6 v-if="data.selectedCountry == `worldwide`">Worldwide</h6>
-                                        <h6 v-else>{{data.selectedCountry.name}} 
-                                            (
-                                                Out of  <span class="dodgerblue">
-                                                            <strong>{{data.mapInfo.singleRow.confirmed.value}}</strong></span> confirmed cases <span class="crimson"><strong>{{((data.mapInfo.singleRow.deaths.value / data.mapInfo.singleRow.confirmed.value) * 100).toFixed(2)}}%</strong></span> of it died. 
-                                                However, <span class="limegreen"><strong>{{ ((data.mapInfo.singleRow.recovered.value / data.mapInfo.singleRow.confirmed.value) * 100).toFixed(2)}}%</strong></span> of it has recovered
-                                            )
-                                        
-                                        </h6>
-                                        <div class="chart-container" style="position: relative;width:100%;">
-                                            <canvas id="cases_chart"></canvas>
-                                        </div>
-                                        <div class="mt10"></div>
-                                        <span v-if="data.selectedCountry == 'worldwide'" class="thead-cases">Updated {{ data.mapInfo.summary.lastUpdate | moment("from", "now") }}. Source: <a href="'https://api.covid19api.com/summary" target="_blank">Covid19 API</a></span>
-                                        <span v-else class="thead-cases">Updated {{ data.mapInfo.summary.lastUpdate | moment("from", "now") }}. Source: <a :href="'https://api.covid19api.com/country/'+data.selectedCountry.name" target="_blank">Covid19 API</a></span>
-                                    </div>
-                                </div>
-                            </div>
 
                             <div class="col-md-12 mt10">
                                 <div class="card">
@@ -217,9 +309,10 @@
                                         <h5>Enjoy using this project?</h5>
                                         <p>This project is inspired by google covid 19 tracker user interface. You can it see <a href="https://news.google.com/covid19/map?hl=en-PH&gl=PH&ceid=PH:en" target="_blank">here</a></p>
                                         <br>
-                                        <h5>Why don't you buy me a <a href="https://www.buymeacoffee.com/reidsolon" target="_blank">coffee!</a></h5>
+                                        <h5>Why don't you buy me a coffee!</h5>
+                                        <link href="https://fonts.googleapis.com/css?family=Cookie" rel="stylesheet"><a class="bmc-button" target="_blank" href="https://www.buymeacoffee.com/reidsolon"><img src="https://cdn.buymeacoffee.com/buttons/bmc-new-btn-logo.svg" alt="Buy me a coffee"><span style="margin-left:15px;font-size:28px !important;">Buy me a coffee</span></a>
                                         <hr>
-                                        <span class="thead-cases">Consumed APIs: <a href="https://covid19.mathdro.id/api" target="_blank">MathroidAPI</a>, <a href="https://api.covid19api.com/" target="_blank">ApiCOVID19</a> </span><br>
+                                        <span class="thead-cases">Consumed APIs: <a href="https://covid19.mathdro.id/api" target="_blank">MathroidAPI</a>, <a href="https://api.covid19api.com/" target="_blank">ApiCOVID19</a>, <a href="https://newsapi.org/" target="_blank">NewsAPI</a> </span><br>
                                         <span class="thead-cases">JS Framework used: <a href="https://vuejs.org" target="_blank">Vue</a></span><br>
                                         <span class="thead-cases">MapboxGL Framework used: <a href="https://soal.github.io/vue-mapbox/api/marker.html#props" target="_blank">VueMapbox</a></span><br>
                                         <span class="thead-cases">Chart Plugin used: <a href="https://chartjs.org" target="_blank">ChartJS</a></span><br>
@@ -265,13 +358,14 @@
                                             </a>
                                             <hr>
                                         </div>
-                                        
+                                        <div class="card-body thead-cases">
+                                            Source: <a href="https://newsapi.org" target="_blank" >NewsAPI </a>
+                                        </div>
                                     </template>
                                     <template v-else>
-                                        <div class="text-center">
-                                            <div class="spinner-border" role="status">
-                                                <span class="sr-only">Loading...</span>
-                                            </div>
+                                        <div class="card-body">
+                                            <loading-line></loading-line><br>
+                                            <loading-line></loading-line>
                                         </div>
                                         <div class="mt10"></div>
                                     </template>
@@ -295,10 +389,9 @@
                                         </div>
                                     </template>
                                     <template v-else>
-                                        <div class="text-center">
-                                            <div class="spinner-border" role="status">
-                                                <span class="sr-only">Loading...</span>
-                                            </div>
+                                        <div class="card-body">
+                                            <loading-line></loading-line><br>
+                                            <loading-line></loading-line>
                                         </div>
                                     </template>
                                     
@@ -342,6 +435,7 @@ export default {
     },
     data(){
         return {
+            dateToday: new Date(),
             toggleHelper: false,
             newsAPI: {
                 apiKey: '993811875ccc4e37adefa84c45cfd597',
@@ -350,29 +444,6 @@ export default {
                 accessToken: 'pk.eyJ1IjoicmVpZHNvbG9uIiwiYSI6ImNqcnZpZThzMTAyN2Ezemx4eHMzM2RoZGwifQ.j65VGpYO6g84DnR1koippQ',
                 mapStyle: `mapbox://styles/mapbox/dark-v10?optimize=true?access_token=pk.eyJ1IjoicmVpZHNvbG9uIiwiYSI6ImNqcnZpZThzMTAyN2Ezemx4eHMzM2RoZGwifQ.j65VGpYO6g84DnR1koippQ`,
             },
-            // data: {
-            //     countries: {
-            //         row: [],
-            //     },
-            //     map: {
-            //         row: [],
-            //         center: [0,0],
-            //         zoom: parseInt(1)
-            //     },
-
-            //     mapInfo: {
-            //         summary: [],
-            //         tableRow: [],
-            //         singleRow: {},
-            //     },
-            //     news: {
-            //         loadingNews: false,
-            //         latestSituations: [],
-            //         newsRow: []
-            //     },
-            //     selectedByType: 'confirmed',
-            //     selectedCountry: 'worldwide'
-            // }
             data: this.$store.state.tableContainer
         }
     },
@@ -381,9 +452,6 @@ export default {
             this.toggleHelper = bool
         },
         defaultCountry() {
-            // this.data.selectedCountry = 'worldwide'
-            // this.data.map.center = [0,0]
-            // this.data.map.zoom = parseInt(1)
             this.$store.state.tableContainer.selectedCountry = 'worldwide'
             this.$store.state.tableContainer.map.center = [0,0]
             this.$store.state.tableContainer.map.zoom = parseInt(1)
@@ -396,7 +464,6 @@ export default {
         getAPI() {
             axios.get('https://api.covid19api.com/')
             .then( res => {
-                // this.data.api = JSON.parse(JSON.stringify(res.data))
                 this.$store.state.tableContainer.api = JSON.parse(JSON.stringify(res.data))
             })
             .catch( res => {
@@ -415,11 +482,9 @@ export default {
         },
 
         getCOUNTRY_DETAILS(country = 'Philippines') {
-            // this.data.countries.details = []
             this.$store.state.tableContainer.countries.details = []
             axios.get(`https://api.covid19api.com/country/${country}`)
             .then( res => {
-                // this.data.map.row = res.data
                 this.$store.state.tableContainer.map.row = res.data
             })
             .catch( err => {
@@ -430,7 +495,6 @@ export default {
         getCOUNTRIES() {
             axios.get('https://covid19.mathdro.id/api/countries')
             .then( res => {
-                // this.data.countries.row = res.data.countries
                 this.$store.state.tableContainer.countries.row = res.data.countries
             })
             .catch( err => {
@@ -451,7 +515,6 @@ export default {
         getSUMMARY() {
             axios.get(`https://covid19.mathdro.id/api/`)
             .then( res => {
-                // this.data.mapInfo.summary = res.data
                 this.$store.state.tableContainer.mapInfo.summary = res.data
             })
             .catch( err => {
@@ -525,7 +588,6 @@ export default {
             var url = `https://covid19-news.herokuapp.com/api/covid19/latest-situations`
             axios.get(url)
             .then( res => {
-                // this.data.news.latestSituations = res.data
                 this.$store.state.tableContainer.news.latestSituations = res.data
             })
             .catch( err => {
@@ -533,20 +595,27 @@ export default {
             })
         },
 
-        getLATEST_NEWS(country = this.data.selectedCountry) {
-            // this.data.news.loadingNews = true
+        getLATEST_NEWS(country = this.$store.state.tableContainer.selectedCountry) {
+            var date = new Date()
+            var month
+            var currentMonth = parseInt(date.getMonth() + 1)
+            if(currentMonth < 10) {
+                month = `0${currentMonth}`
+            } else {
+                month = currentMonth
+            }
+            var endDate = date.getFullYear()+'-'+month+'-'+date.getDate()
+
             this.$store.state.tableContainer.news.loadingNews = true
             var url 
             if(country != 'worldwide') {
-                url = `https://newsapi.org/v2/everything?q=covid%20news%20in%20${country.name}&from=2020-03-24&sortBy=publishedAt&apiKey=993811875ccc4e37adefa84c45cfd597`
+                url = `https://newsapi.org/v2/everything?q=covid%20news%20in%20${country.name}&from=${endDate}&sortBy=publishedAt&apiKey=993811875ccc4e37adefa84c45cfd597`
             } else {
-                url = `https://newsapi.org/v2/everything?q=covid%20news&from=2020-03-24&sortBy=publishedAt&apiKey=993811875ccc4e37adefa84c45cfd597`
+                url = `https://newsapi.org/v2/everything?q=covid%20news&from=${endDate}&sortBy=publishedAt&apiKey=993811875ccc4e37adefa84c45cfd597`
             }
             
             axios.get(url)
             .then(res => {
-                // this.data.news.newsRow = res.data
-                // this.data.news.loadingNews = false
                 this.$store.state.tableContainer.news.newsRow = res.data
                 this.$store.state.tableContainer.news.loadingNews = false
             })
@@ -556,6 +625,8 @@ export default {
         },
 
         getSUMMARY_TABLE(country = this.$store.state.tableContainer.selectedCountry) {
+            this.$store.state.tableContainer.mapInfo.loadingSpecific = false
+
             this.getLATEST_NEWS()
             var url = ''
             if(country == 'worldwide') {
@@ -580,6 +651,92 @@ export default {
                     console.log(err)
                 })
             }
+
+            if(this.data.selectedCountry != 'worldwide') {
+                var url2 = `https://api.coronatracker.com/v3/stats/worldometer/country?countryCode=${country.iso2}`
+                axios.get(url2)
+                .then( res => {
+                    this.data.mapInfo.specificSummary = res.data[0]
+                    this.$store.state.tableContainer.mapInfo.loadingSpecific = true
+                })
+                .catch( err => {
+                    console.log(err)
+                })
+            }
+            
+
+            var date = new Date()
+            var month
+            var currentMonth = parseInt(date.getMonth() + 1)
+            if(currentMonth < 10) {
+                month = `0${currentMonth}`
+            } else {
+                month = currentMonth
+            }
+            var endDate = date.getFullYear()+'-'+month+'-'+date.getDate()
+
+            var url3 = `https://api.coronatracker.com/v3/analytics/trend/country?countryCode=${country.iso2}&startDate=2020-04-11&endDate=${endDate}`
+            axios.get(url3)
+            .then( res => {
+                var array = res.data
+                var confirmed = []
+                var deaths    = []
+                var recovered = []
+                var labels    = []
+
+                array.map( (el) => {
+                    var label = new Date(el.last_updated)
+                    labels.push( (label.getMonth() + 1) + '-'+label.getDate() )
+                    confirmed.push( el.total_confirmed )
+                    deaths.push( el.total_deaths)
+                    recovered.push( el.total_recovered)
+                })
+
+                var datasets = [
+                    {
+                        label: 'Confirmed',
+                        data: confirmed,
+                        borderWidth: 1,
+                        backgroundColor: [
+                            'rgba(0, 0, 255, 0.1)',
+                        ],
+                        borderColor: [
+                            'rgba(0, 0, 255, 1)',
+                        ],
+                    },
+                    {
+                        label: 'Recovered',
+                        data: recovered,
+                        borderWidth: 1,
+                        backgroundColor: [
+                            'rgba(0, 255, 0, 0.1)',
+                        ],
+                        borderColor: [
+                            'rgba(0, 255, 0, 1)',
+                        ],
+                    },
+                    {
+                        label: 'Died',
+                        data: deaths,
+                        borderWidth: 1,
+                        backgroundColor: [
+                            'rgba(255, 0, 0, 0.1)',
+                        ],
+                        borderColor: [
+                            'rgba(255, 0, 0, 1)',
+                        ],
+                    },
+                ]
+
+                var processed = {
+                    datasets,
+                    labels
+                }
+                setChart('country_new_cases', 'line', processed)
+            })
+            .catch( err => {
+                console.log(err)
+            })
             
         },
 
@@ -715,4 +872,7 @@ export default {
 .dark-mode-2{background-color: #2e3235; color: #fff;}
 
 .l-space {letter-spacing: 0.05em;}
+
+/* buy me a coffee*/
+.bmc-button img{height: 34px !important;width: 35px !important;margin-bottom: 1px !important;box-shadow: none !important;border: none !important;vertical-align: middle !important;}.bmc-button{padding: 7px 10px 7px 10px !important;line-height: 35px !important;height:51px !important;min-width:217px !important;text-decoration: none !important;display:inline-flex !important;color:#ffffff !important;background-color:red !important;border-radius: 5px !important;border: 1px solid transparent !important;padding: 7px 10px 7px 10px !important;font-size: 28px !important;letter-spacing:0.6px !important;box-shadow: 0px 1px 2px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 1px 2px 2px rgba(190, 190, 190, 0.5) !important;margin: 0 auto !important;font-family:'Cookie', cursive !important;-webkit-box-sizing: border-box !important;box-sizing: border-box !important;-o-transition: 0.3s all linear !important;-webkit-transition: 0.3s all linear !important;-moz-transition: 0.3s all linear !important;-ms-transition: 0.3s all linear !important;transition: 0.3s all linear !important;}.bmc-button:hover, .bmc-button:active, .bmc-button:focus {-webkit-box-shadow: 0px 1px 2px 2px rgba(190, 190, 190, 0.5) !important;text-decoration: none !important;box-shadow: 0px 1px 2px 2px rgba(190, 190, 190, 0.5) !important;opacity: 0.85 !important;color:#ffffff !important;}
 </style>

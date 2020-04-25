@@ -16,6 +16,11 @@ export const store = new Vuex.Store({
         },
 
         mapInfo: {
+            //loading--
+            loadingSpecfic: false,
+            loadingSummary: false,
+
+            specificSummary: {},
             summary: [],
             tableRow: [],
             singleRow: {},
