@@ -145,7 +145,7 @@
                                                         <template v-if="data.mapInfo.loadingSpecific">
                                                             <span class="thead-cases">Confirmed</span>
                                                             <h3>{{thousand_number(data.mapInfo.specificSummary.totalConfirmed)}}</h3>
-                                                            <h6 class="crimson" v-if="data.mapInfo.specificSummary.dailyConfirmed > 0">+{{data.mapInfo.specificSummary.dailyConfirmed}} new cases</h6>
+                                                            <h6 class="crimson" v-if="data.mapInfo.specificSummary.dailyConfirmed > 0">+{{thousand_number(data.mapInfo.specificSummary.dailyConfirmed)}} new cases</h6>
                                                             <h6 class="crimson" v-else>--</h6>
                                                         </template>
                                                         <template v-else>
@@ -174,7 +174,7 @@
                                                         <template v-if="data.mapInfo.loadingSpecific">
                                                             <span class="thead-cases">Deaths</span>
                                                             <h3>{{thousand_number(data.mapInfo.specificSummary.totalDeaths)}}</h3>
-                                                            <h6 class="crimson" v-if="data.mapInfo.specificSummary.dailyConfirmed > 0">+{{data.mapInfo.specificSummary.dailyDeaths}} new death</h6>
+                                                            <h6 class="crimson" v-if="data.mapInfo.specificSummary.dailyConfirmed > 0">+{{thousand_number(data.mapInfo.specificSummary.dailyDeaths)}} new death</h6>
                                                             <h6 class="crimson" v-else>--</h6>
                                                         </template>
                                                         <template v-else>
@@ -185,45 +185,61 @@
                                             </div>
                                         </div>
                                         <div class="row" v-else>
-                                            <div class="col-md-4 col-4">
-                                                <div class="card">
-                                                    <div class="card-body no-p-top no-p-bottom">
-                                                        <template>
-                                                            <span class="thead-cases">Confirmed</span>
-                                                            <h3>{{thousand_number(data.mapInfo.summary.confirmed.value)}}</h3>
-                                                        </template>
+                                            <template v-if="data.mapInfo.tableRow != null">
+                                                <div class="col-md-4 col-4">
+                                                    <div class="card">
+                                                        <div class="card-body no-p-top no-p-bottom">
+                                                            <template>
+                                                                <span class="thead-cases">Confirmed</span>
+                                                                <h3>{{thousand_number(data.mapInfo.summary.confirmed.value)}}</h3>
+                                                                <h6 class="crimson" v-if="data.mapInfo.tableRow.Global.NewConfirmed > 0">+{{thousand_number(data.mapInfo.tableRow.Global.NewConfirmed)}} new cases</h6>
+                                                                <h6 class="crimson" v-else>--</h6>
+                                                            </template>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-md-4 col-4">
-                                                <div class="card"> 
-                                                    <div class="card-body no-p-top no-p-bottom">
-                                                        <template>
-                                                            <span class="thead-cases">Recovered</span>
-                                                            <h3>{{thousand_number(data.mapInfo.summary.recovered.value)}}</h3>
-                                                        </template>
+                                                <div class="col-md-4 col-4">
+                                                    <div class="card"> 
+                                                        <div class="card-body no-p-top no-p-bottom">
+                                                            <template>
+                                                                <span class="thead-cases">Recovered</span>
+                                                                <h3>{{thousand_number(data.mapInfo.summary.recovered.value)}}</h3>
+                                                                <h6 class="crimson" v-if="data.mapInfo.tableRow.Global.NewRecovered > 0">+{{thousand_number(data.mapInfo.tableRow.Global.NewRecovered)}} new recovered</h6>
+                                                                <h6 class="crimson" v-else>--</h6>
+                                                            </template>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-md-4 col-4">
-                                                <div class="card">
-                                                    <div class="card-body no-p-top no-p-bottom">
-                                                        <template>
-                                                            <span class="thead-cases">Deaths</span>
-                                                            <h3>{{thousand_number(data.mapInfo.summary.deaths.value)}}</h3>
-                                                        </template>
+                                                <div class="col-md-4 col-4">
+                                                    <div class="card">
+                                                        <div class="card-body no-p-top no-p-bottom">
+                                                            <template>
+                                                                <span class="thead-cases">Deaths</span>
+                                                                <h3>{{thousand_number(data.mapInfo.summary.deaths.value)}}</h3>
+                                                                <h6 class="crimson" v-if="data.mapInfo.tableRow.Global.NewDeaths > 0">+{{thousand_number(data.mapInfo.tableRow.Global.NewDeaths)}} new death</h6>
+                                                                <h6 class="crimson" v-else>--</h6>
+                                                            </template>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            </template>
                                         </div>
                                     </div>
                                     <div class="card-body">
                                         Cases over time
                                         <hr>
                                     </div>
-                                    <div class="chart-container" style="position: relative; width:100%;">
-                                        <canvas id="country_new_cases"></canvas>
+                                    <div class="card-body" v-if="data.selectedCountry != 'worldwide'">
+                                        <div class="chart-container" style="position: relative; width:100%;" >
+                                            <canvas id="country_new_cases"></canvas>
+                                        </div>
                                     </div>
+                                    <div class="card-body" v-else>
+                                        <div class="chart-container" style="position: relative; width:100%;">
+                                            <canvas id="new_cases_chart"></canvas>
+                                        </div>
+                                    </div>
+                                    
 
                                     <div class="card-body" v-if="data.selectedCountry != 'worldwide'">
                                         <h6 v-if="data.selectedCountry == `worldwide`">Worldwide</h6>
@@ -261,14 +277,14 @@
                                                     <th scope="col" class="no-bt thead-cases no-bb">Deaths</th>
                                                 </tr>
                                             </thead>
-                                            <tbody v-if="data.mapInfo.tableRow">
+                                            <tbody v-if="data.mapInfo.tableRow.Countries">
                                                 <tr>
                                                     <th scope="col">Worldwide</th>
                                                     <th scope="col">{{thousand_number(data.mapInfo.summary.confirmed.value)}}</th>
                                                     <th scope="col">{{thousand_number(data.mapInfo.summary.recovered.value)}}</th>
                                                     <th scope="col">{{thousand_number(data.mapInfo.summary.deaths.value)}}</th>
                                                 <tr>
-                                                <tr v-for="(country, index) in data.mapInfo.tableRow" :key="index" style="color: #727375; font-size: 90%;">
+                                                <tr v-for="(country, index) in data.mapInfo.tableRow.Countries" :key="index" style="color: #727375; font-size: 90%;">
                                                     <td>{{country.Country}}</td>
                                                     <td><span v-if="country.NewConfirmed > 0"> <strong>(+{{thousand_number(country.NewConfirmed)}})</strong></span> {{thousand_number(country.TotalConfirmed) }}</td>
                                                     <td><span v-if="country.NewRecovered > 0"> <strong>(+{{thousand_number(country.NewRecovered)}})</strong></span> {{thousand_number(country.TotalRecovered) }}</td>
@@ -283,22 +299,6 @@
                                                 </div>
                                             </tbody>
                                         </table>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-12 mt10">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h5>Cases over time</h5>
-                                        <div class="chart-container" style="position: relative; width:100%;">
-                                            <canvas id="new_cases_chart"></canvas>
-                                        </div>
-                                        <div class="mt10"></div>
-                                        <span  class="thead-cases">New cases are the confirmed cases reported since the previous day</span><br>
-                                        <span v-if="data.selectedCountry == 'worldwide'" class="thead-cases">Updated {{ data.mapInfo.summary.lastUpdate | moment("from", "now") }}. Source: <a href="'https://api.covid19api.com/summary" target="_blank">Covid19 API</a></span>
-                                        <span v-else class="thead-cases">Updated {{ data.mapInfo.summary.lastUpdate | moment("from", "now") }}. Source: <a :href="'https://api.covid19api.com/country/'+data.selectedCountry.name" target="_blank">Covid19 API</a></span>
-                                        
                                     </div>
                                 </div>
                             </div>
@@ -596,16 +596,10 @@ export default {
         },
 
         getLATEST_NEWS(country = this.$store.state.tableContainer.selectedCountry) {
+            console.log('hi')
             var date = new Date()
-            var month
-            var currentMonth = parseInt(date.getMonth() + 1)
-            if(currentMonth < 10) {
-                month = `0${currentMonth}`
-            } else {
-                month = currentMonth
-            }
-            var endDate = date.getFullYear()+'-'+month+'-'+date.getDate()
-
+            var endDate = date.getFullYear()+'-'+date.getMonth()+'-'+date.getDate()
+            console.log(endDate)
             this.$store.state.tableContainer.news.loadingNews = true
             var url 
             if(country != 'worldwide') {
@@ -625,118 +619,124 @@ export default {
         },
 
         getSUMMARY_TABLE(country = this.$store.state.tableContainer.selectedCountry) {
-            this.$store.state.tableContainer.mapInfo.loadingSpecific = false
 
-            this.getLATEST_NEWS()
-            var url = ''
-            if(country == 'worldwide') {
-                url = 'https://api.covid19api.com/summary'
+            if(country != 'worldwide')
+            {
+                this.$store.state.tableContainer.mapInfo.loadingSpecific = false
 
-                axios.get(url)
-                .then( res => {
-                    this.data.mapInfo.tableRow = res.data.Countries
-                })
-                .catch( err => {
-                    console.log(err)
-                })
-            } else {
-                url = `https://covid19.mathdro.id/api/countries/${country.iso3}`
+                this.getLATEST_NEWS()
+                var url = ''
+                if(country == 'worldwide') {
+                    url = 'https://api.covid19api.com/summary'
 
-                axios.get(url)
-                .then( res => {
-                    this.data.mapInfo.singleRow = res.data
-                    this.populateChart(country.name)
-                })
-                .catch( err => {
-                    console.log(err)
-                })
-            }
+                    axios.get(url)
+                    .then( res => {
+                        this.data.mapInfo.tableRow = res.data
+                    })
+                    .catch( err => {
+                        console.log(err)
+                    })
+                } else {
+                    url = `https://covid19.mathdro.id/api/countries/${country.iso3}`
 
-            if(this.data.selectedCountry != 'worldwide') {
-                var url2 = `https://api.coronatracker.com/v3/stats/worldometer/country?countryCode=${country.iso2}`
-                axios.get(url2)
-                .then( res => {
-                    this.data.mapInfo.specificSummary = res.data[0]
-                    this.$store.state.tableContainer.mapInfo.loadingSpecific = true
-                })
-                .catch( err => {
-                    console.log(err)
-                })
-            }
-            
-
-            var date = new Date()
-            var month
-            var currentMonth = parseInt(date.getMonth() + 1)
-            if(currentMonth < 10) {
-                month = `0${currentMonth}`
-            } else {
-                month = currentMonth
-            }
-            var endDate = date.getFullYear()+'-'+month+'-'+date.getDate()
-
-            var url3 = `https://api.coronatracker.com/v3/analytics/trend/country?countryCode=${country.iso2}&startDate=2020-04-11&endDate=${endDate}`
-            axios.get(url3)
-            .then( res => {
-                var array = res.data
-                var confirmed = []
-                var deaths    = []
-                var recovered = []
-                var labels    = []
-
-                array.map( (el) => {
-                    var label = new Date(el.last_updated)
-                    labels.push( (label.getMonth() + 1) + '-'+label.getDate() )
-                    confirmed.push( el.total_confirmed )
-                    deaths.push( el.total_deaths)
-                    recovered.push( el.total_recovered)
-                })
-
-                var datasets = [
-                    {
-                        label: 'Confirmed',
-                        data: confirmed,
-                        borderWidth: 1,
-                        backgroundColor: [
-                            'rgba(0, 0, 255, 0.1)',
-                        ],
-                        borderColor: [
-                            'rgba(0, 0, 255, 1)',
-                        ],
-                    },
-                    {
-                        label: 'Recovered',
-                        data: recovered,
-                        borderWidth: 1,
-                        backgroundColor: [
-                            'rgba(0, 255, 0, 0.1)',
-                        ],
-                        borderColor: [
-                            'rgba(0, 255, 0, 1)',
-                        ],
-                    },
-                    {
-                        label: 'Died',
-                        data: deaths,
-                        borderWidth: 1,
-                        backgroundColor: [
-                            'rgba(255, 0, 0, 0.1)',
-                        ],
-                        borderColor: [
-                            'rgba(255, 0, 0, 1)',
-                        ],
-                    },
-                ]
-
-                var processed = {
-                    datasets,
-                    labels
+                    axios.get(url)
+                    .then( res => {
+                        this.data.mapInfo.singleRow = res.data
+                        this.populateChart(country.name)
+                    })
+                    .catch( err => {
+                        console.log(err)
+                    })
                 }
-                setChart('country_new_cases', 'line', processed)
-            })
-            .catch( err => {
-                console.log(err)
-            })
+
+                if(this.data.selectedCountry != 'worldwide') {
+                    var url2 = `https://api.coronatracker.com/v3/stats/worldometer/country?countryCode=${country.iso2}`
+                    axios.get(url2)
+                    .then( res => {
+                        this.data.mapInfo.specificSummary = res.data[0]
+                        this.$store.state.tableContainer.mapInfo.loadingSpecific = true
+                    })
+                    .catch( err => {
+                        console.log(err)
+                    })
+                }
+                
+
+                var date = new Date()
+                var month
+                var currentMonth = parseInt(date.getMonth() + 1)
+                if(currentMonth < 10) {
+                    month = `0${currentMonth}`
+                } else {
+                    month = currentMonth
+                }
+                var endDate = date.getFullYear()+'-'+month+'-'+date.getDate()
+
+                var url3 = `https://api.coronatracker.com/v3/analytics/trend/country?countryCode=${country.iso2}&startDate=2020-04-11&endDate=${endDate}`
+                axios.get(url3)
+                .then( res => {
+                    var array = res.data
+                    var confirmed = []
+                    var deaths    = []
+                    var recovered = []
+                    var labels    = []
+
+                    array.map( (el) => {
+                        var label = new Date(el.last_updated)
+                        labels.push( (label.getMonth() + 1) + '-'+label.getDate() )
+                        confirmed.push( el.total_confirmed )
+                        deaths.push( el.total_deaths)
+                        recovered.push( el.total_recovered)
+                    })
+
+                    var datasets = [
+                        {
+                            label: 'Confirmed',
+                            data: confirmed,
+                            borderWidth: 1,
+                            backgroundColor: [
+                                'rgba(0, 0, 255, 0.1)',
+                            ],
+                            borderColor: [
+                                'rgba(0, 0, 255, 1)',
+                            ],
+                        },
+                        {
+                            label: 'Recovered',
+                            data: recovered,
+                            borderWidth: 1,
+                            backgroundColor: [
+                                'rgba(0, 255, 0, 0.1)',
+                            ],
+                            borderColor: [
+                                'rgba(0, 255, 0, 1)',
+                            ],
+                        },
+                        {
+                            label: 'Died',
+                            data: deaths,
+                            borderWidth: 1,
+                            backgroundColor: [
+                                'rgba(255, 0, 0, 0.1)',
+                            ],
+                            borderColor: [
+                                'rgba(255, 0, 0, 1)',
+                            ],
+                        },
+                    ]
+
+                    var processed = {
+                        datasets,
+                        labels
+                    }
+                    setChart('country_new_cases', 'line', processed)
+                })
+                .catch( err => {
+                    console.log(err)
+                })
+            } else {
+                this.getSUMMARY()
+            }
             
         },
 
