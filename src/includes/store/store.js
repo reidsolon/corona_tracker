@@ -27,7 +27,11 @@ export const store = new Vuex.Store({
               deaths: {value: 0},
             },
             tableRow: [],
-            singleRow: {},
+            singleRow: {
+              confirmed: {value: 0},
+              recovered: {value: 0},
+              deaths: {value: 0},
+            },
         },
         news: {
             loadingNews: false,

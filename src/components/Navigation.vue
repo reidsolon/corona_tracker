@@ -236,7 +236,7 @@ export default {
                         borderWidth: 1,
                         backgroundColor: [
                             'rgba(0, 255, 0, 0.1)',
-                        ],
+                        ], 
                         borderColor: [
                             'rgba(0, 255, 0, 1)',
                         ],

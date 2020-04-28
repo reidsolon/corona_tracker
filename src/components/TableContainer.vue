@@ -72,52 +72,6 @@
                     
                 </div>
             </div>
-
-            <MglMap 
-                :center="data.map.center"
-                :zoom="data.map.zoom"
-                :accessToken="mapboxConfig.accessToken" 
-                :mapStyle="mapboxConfig.mapStyle"     
-            >
-                <MglAttributionControl />
-                <MglNavigationControl position="bottom-right" />
-                <MglGeolocateControl position="bottom-right" />
-                <MglScaleControl />
-
-                <!-- markers -->
-                <template v-if="true">
-                    <MglMarker v-for="(marker, index) in data.map.row" :coordinates="[marker.long, marker.lat]" :key="index" style="z-index: 11 important;">
-                        <div 
-                            slot="marker" 
-                            class="marker-pop-up" 
-                            :class="{'death__color' : data.selectedByType == 'death' && marker.deaths > 0, 'confirmed__color' : data.selectedByType == 'confirmed' && marker.confirmed > 0}"
-                        >
-                        </div>
-                        <MglPopup v-if="marker.long != null && marker.lat != null" :coordinates="[marker.long, marker.lat]" anchor="top">
-                                <div class="row">
-                                    <div class="col-md-12" style="text-align:center;">
-                                        <strong> {{marker.combinedKey}} </strong>
-                                    </div>
-                                    <div class="col-md-12 mt10">
-                                        Confirmed: <strong class="dodgerblue">{{marker.confirmed}}</strong>
-                                    </div>
-                                    <div class="col-md-12">
-                                        Deaths: <strong class="crimson">{{marker.deaths}}</strong>
-                                    </div>
-                                    <div class="col-md-12">
-                                        Recovered: <strong class="limegreen">{{marker.recovered}}</strong>
-                                    </div>
-                                    <div class="col-md-12">
-                                        Active Cases: {{marker.active}}
-                                    </div>
-                                    <div class="col-md-12">
-                                        Updated {{ marker.lastUpdate | moment("from", "now") }}
-                                    </div>
-                                </div>
-                        </MglPopup>
-                    </MglMarker>
-                </template>
-            </MglMap>
         </div>
         <div class="col-md-12 ">
             <div class="row justify-content-center">
@@ -405,31 +359,13 @@
         </div>
     </div>
 </template>
-<script>
+<script >
 import Navigation from './Navigation'
-import Mapbox from "mapbox-gl";
 import {setChart} from "../includes/country_chart"
-import { 
-    MglMap,
-    MglPopup, 
-    MglMarker, 
-    MglAttributionControl,
-    MglNavigationControl,
-    MglGeolocateControl,
-    // MglFullscreenControl,
-    MglScaleControl
-    } from "vue-mapbox";
+import {initializeMap, setFeatures} from '../includes/mapbox'
 const axios = require('axios')
 export default {
     components: {
-        MglMap,
-        MglMarker,
-        MglPopup,
-        MglAttributionControl,
-        MglNavigationControl,
-        MglGeolocateControl,
-        // MglFullscreenControl,
-        MglScaleControl,
         Navigation
     },
     data(){
@@ -447,6 +383,17 @@ export default {
         }
     },
     methods: {
+        _initMap() {
+            var config = {
+                accessToken: this.mapboxConfig.accessToken,
+                mapStyle: this.mapboxConfig.mapStyle,
+                root: 'Mapbox__wrapper',
+                center: this.data.map.center,
+                zoom: this.data.map.zoom
+            }
+
+            this.map = initializeMap(config)
+        },
         toggle(bool) {
             this.toggleHelper = bool
         },
@@ -459,25 +406,6 @@ export default {
             var num_parts = num.toString().split(".");
             num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             return num_parts.join(".");
-        },
-        getAPI() {
-            axios.get('https://api.covid19api.com/')
-            .then( res => {
-                this.$store.state.tableContainer.api = JSON.parse(JSON.stringify(res.data))
-            })
-            .catch( res => {
-                console.log(res)
-            })
-        },
-
-        getLiveCount(country = 'Philippines') {
-            axios.get(`https://api.covid19api.com/live/country/${country}`)
-            .then( res => {
-                this.markers = res.data
-            })
-            .catch( res => {
-                console.log(res)
-            })
         },
 
         getCOUNTRY_DETAILS(country = 'Philippines') {
@@ -504,7 +432,13 @@ export default {
         getALL() {
             axios.get(`https://covid19.mathdro.id/api/confirmed`)
             .then( res => {
-                this.data.map.row = res.data
+                var data = JSON.parse(JSON.stringify(res.data))
+                if(this.map != null) {
+                    setFeatures(data)
+                } else {
+                    this._initMap()
+                    setFeatures(data)
+                }
             })
             .catch( err => {
                 console.log(err)
@@ -811,18 +745,17 @@ export default {
 
     },
     mounted() {
-        this.getAPI()
+        this._initMap()
         this.getCOUNTRIES()
         this.getSUMMARY()
         this.getLATEST_SITUATION()
         this.getLATEST_NEWS()
         this.getSUMMARY_TABLE()
 
-        // this.getALL()
+        this.getALL()
     },
-
     created() {
-        this.mapbox = Mapbox;
+        
     }
 }
 </script>
@@ -842,8 +775,9 @@ export default {
     box-shadow: 0 3px 8px 0 rgba(0,0,0,.25);
 }
 #summary__table {overflow-y: scroll; height: 40vh !important; display: block;}
+.mapboxgl-popup-content{padding: 0px !important;}
 .mapboxgl-map {width: 100% !important;}
-#Mapbox__wrapper{z-index: 9; height: 60vh !important; position: relative; padding: 0px; width: 100%;}
+#Mapbox__wrapper{z-index: 9; height: 60vh !important; position: relative; padding: 0px; width: 100%;font-family: 'Product Sans Regular';}
 .mapinfo_graph {z-index: 10; position: absolute; margin-top: 1%;margin-left: 1%;}
 .marker-pop-up {border-radius: 50%; height: 15px; width: 15px;}
 .thead-cases{font-weight: unset !important; color: #74797e; font-size: 80%;}
