@@ -11,7 +11,7 @@
                                 Updated {{ data.mapInfo.summary.lastUpdate | moment("from", "now") }}
                             </div>
                             <div class="card-body ">
-                                <span class="thead-cases">Map data is currently unavailable due to some network data issues.<br> It will be back as soon it is fixed.</span>
+                                <!-- <span class="thead-cases">Map data is currently unavailable due to some network data issues.<br> It will be back as soon it is fixed.</span> -->
 
                                 <div class="form-group">
                                     <select class="form-control" v-model="data.selectedCountry" @change="getSUMMARY_TABLE(data.selectedCountry)">
